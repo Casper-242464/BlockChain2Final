@@ -36,6 +36,3 @@ jobs:
 
       - name: Run Forge tests
         run: forge test -vvv
-      
-      - name: Run Forge coverage
-        run: forge coverage --report lcov && forge coverage --report summary > coverage_report.md
