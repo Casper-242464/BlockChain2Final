@@ -1,5 +1,5 @@
 Compiling 23 files with Solc 0.8.34
-Solc 0.8.34 finished in 763.51ms
+Solc 0.8.34 finished in 732.10ms
 Compiler run successful!
 Analysing contracts...
 Running tests...
@@ -7,9 +7,9 @@ Running tests...
 Ran 2 tests for test/Counter.t.sol:CounterTest
 [PASS] testFuzz_SetNumber(uint256) (runs: 1000, μ: 28563, ~: 30892)
 [PASS] test_Increment() (gas: 30985)
-Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 27.45ms (27.30ms CPU time)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 31.90ms (31.58ms CPU time)
 
-Ran 1 test suite in 28.03ms (27.45ms CPU time): 2 tests passed, 0 failed, 0 skipped (2 total tests)
+Ran 1 test suite in 32.51ms (31.90ms CPU time): 2 tests passed, 0 failed, 0 skipped (2 total tests)
 Wrote LCOV report.
 
 ╭----------------------+---------------+---------------+---------------+---------------╮
