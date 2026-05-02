@@ -46,3 +46,11 @@ jobs:
         with:
           name: coverage-report
           path: coverage_report.md
+
+      - name: Commit Coverage Report
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git add coverage_report.md
+          git commit -m "chore: update coverage report [skip ci]" || echo "No changes to commit"
+          git push
