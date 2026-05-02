@@ -15,7 +15,7 @@ jobs:
     name: Foundry project 
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
     steps:
       - uses: actions/checkout@v5
         with:
