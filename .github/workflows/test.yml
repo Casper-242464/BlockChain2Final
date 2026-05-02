@@ -36,3 +36,7 @@ jobs:
 
       - name: Run Forge tests
         run: forge test -vvv
+
+      - name: Run Coverage (>= 90% Requirement)
+        run: |
+          forge coverage --report lcov --report summary --ir-minimum > coverage_report.md
