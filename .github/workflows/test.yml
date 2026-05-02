@@ -50,7 +50,7 @@ jobs:
 
       - name: Run Coverage and Check Threshold
         run: |
-          forge coverage --report summary --no-match-path "{test,script}/*.sol" > coverage_report.md
+          forge coverage --report summary --match-path "src//*.sol" > coverage_report.md
           COVERAGE=$(grep "Total" coverage_report.md | awk '{print $3}' | cut -d'.' -f1)
           if [ "$COVERAGE" -lt 90 ]; then
             echo "Coverage is below 90% ($COVERAGE%)"
