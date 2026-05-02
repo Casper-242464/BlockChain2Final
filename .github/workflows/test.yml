@@ -40,3 +40,9 @@ jobs:
       - name: Run Coverage (>= 90% Requirement)
         run: |
           forge coverage --report lcov --report summary --ir-minimum > coverage_report.md
+
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: coverage_report.md
