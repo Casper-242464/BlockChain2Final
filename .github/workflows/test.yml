@@ -48,9 +48,14 @@ jobs:
           target: '.'
           fail-on: medium
 
-      - name: Run Coverage (>= 90% Requirement)
+      - name: Run Coverage and Check Threshold
         run: |
-          forge coverage --report lcov --report summary --ir-minimum > coverage_report.md
+          forge coverage --report summary > coverage_report.md
+          COVERAGE=$(grep "Total" coverage_report.md | awk '{print $3}' | cut -d'.' -f1)
+          if [ "$COVERAGE" -lt 90 ]; then
+            echo "Coverage is below 90% ($COVERAGE%)"
+            exit 1
+          fi
 
       - name: Upload Coverage Report
         uses: actions/upload-artifact@v4
