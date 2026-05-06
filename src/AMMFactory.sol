@@ -29,4 +29,33 @@ contract AMMFactory is Initializable, UUPSUpgradeable, Ownable2StepUpgradeable, 
 
         feeRecipient = owner_;
     }
+
+    function createPair(address tokenA, address tokenB) external nonReentrant returns (address pair) {
+        return createPairCreate2(tokenA, tokenB);
+    }
+
+    function createPairCreate2(address tokenA, address tokenB) public nonReentrant returns (address pair) {
+        (address token0, address token1) = sortTokens(tokenA, tokenB);
+        require(token0 != token1, "AMMFactory: IDENTICAL_ADDRESSES");
+        require(token0 != address(0), "AMMFactory: ZERO_ADDRESS");
+        require(getPair[token0][token1] == address(0), "AMMFactory: PAIR_EXISTS");
+
+        bytes32 salt = keccak256(abi.encodePacked(token0, token1));
+        pair = address(new AMMPair{salt: salt}(token0, token1, address(this)));
+
+        _registerPair(token0, token1, pair);
+        emit PairCreated(token0, token1, pair, allPairs.length);
+    }
+
+    function createPairCreate(address tokenA, address tokenB) external nonReentrant returns (address pair) {
+        (address token0, address token1) = sortTokens(tokenA, tokenB);
+        require(token0 != token1, "AMMFactory: IDENTICAL_ADDRESSES");
+        require(token0 != address(0), "AMMFactory: ZERO_ADDRESS");
+        require(getPair[token0][token1] == address(0), "AMMFactory: PAIR_EXISTS");
+
+        pair = address(new AMMPair(token0, token1, address(this)));
+
+        _registerPair(token0, token1, pair);
+        emit PairCreatedFallback(token0, token1, pair, allPairs.length);
+    }
 }
