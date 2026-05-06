@@ -51,16 +51,33 @@ jobs:
       - name: Run Coverage and Filter
         run: |
           sudo apt-get install lcov -y
-
+          
+          # 1. Generate the raw lcov data
           forge coverage --report lcov --ir-minimum
 
+          # 2. Filter out scripts and tests (Fixes Exit Code 25)
           lcov --remove lcov.info 'script/*' 'test/*' --ignore-errors unused -o filtered-lcov.info
 
-          lcov --list filtered-lcov.info > filtered_summary.txt
+          # 3. Save the summary to the file name the upload step expects
+          lcov --list filtered-lcov.info > coverage_report.md
 
-          COVERAGE=$(grep "Total:" filtered_summary.txt | grep -oE "[0-9]+\.[0-9]+" | head -1)
-
+          # 4. Extract the percentage for the logs and threshold check
+          # Using grep -oE to reliably find the number regardless of table width
+          COVERAGE=$(grep "Total:" coverage_report.md | grep -oE "[0-9]+\.[0-9]+" | head -1)
           echo "Coverage: $COVERAGE%"
+
+          # 5. Professional Touch: Add the report to the GitHub UI Summary
+          echo "## Coverage Report" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat coverage_report.md >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+          # 6. Milestone Check (Required for End of W8)
+          # We use 'bc' for decimal comparison or just check if it's less than 50
+          if (( $(echo "$COVERAGE < 50" | bc -l) )); then
+            echo "Error: Coverage is $COVERAGE%, which is below the 50% milestone requirement."
+            exit 1
+          fi
 
       - name: Upload Coverage Report
         uses: actions/upload-artifact@v4
