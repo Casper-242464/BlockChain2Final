@@ -34,4 +34,23 @@ contract AMMPair is ReentrancyGuard {
         token1 = _token1;
         factory = _factory;
     }
+
+    function approve(address spender, uint256 value) external returns (bool) {
+        allowance[msg.sender][spender] = value;
+        emit Approval(msg.sender, spender, value);
+        return true;
+    }
+
+    function transfer(address to, uint256 value) external returns (bool) {
+        _transfer(msg.sender, to, value);
+        return true;
+    }
+
+    function transferFrom(address from, address to, uint256 value) external returns (bool) {
+        uint256 allowed = allowance[from][msg.sender];
+        require(allowed >= value, "AMMPair: TRANSFER_AMOUNT_EXCEEDS_ALLOWANCE");
+        allowance[from][msg.sender] = allowed - value;
+        _transfer(from, to, value);
+        return true;
+    }
 }
