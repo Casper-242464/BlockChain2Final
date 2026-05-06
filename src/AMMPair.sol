@@ -53,4 +53,87 @@ contract AMMPair is ReentrancyGuard {
         _transfer(from, to, value);
         return true;
     }
+
+    function getReserves() public view returns (uint256, uint256) {
+        return (reserve0, reserve1);
+    }
+
+    function addLiquidity(uint256 amount0, uint256 amount1, address to) external nonReentrant returns (uint256 liquidity) {
+        require(amount0 > 0 && amount1 > 0, "AMMPair: INSUFFICIENT_AMOUNT");
+
+        IERC20(token0).transferFrom(msg.sender, address(this), amount0);
+        IERC20(token1).transferFrom(msg.sender, address(this), amount1);
+
+        uint256 balance0 = IERC20(token0).balanceOf(address(this));
+        uint256 balance1 = IERC20(token1).balanceOf(address(this));
+        uint256 amount0Added = balance0 - reserve0;
+        uint256 amount1Added = balance1 - reserve1;
+
+        if (totalSupply == 0) {
+            uint256 root = sqrt(amount0Added * amount1Added);
+            liquidity = root - MINIMUM_LIQUIDITY;
+            _mint(address(0), MINIMUM_LIQUIDITY);
+        } else {
+            uint256 liquidity0 = (amount0Added * totalSupply) / reserve0;
+            uint256 liquidity1 = (amount1Added * totalSupply) / reserve1;
+            liquidity = liquidity0 < liquidity1 ? liquidity0 : liquidity1;
+        }
+
+        require(liquidity > 0, "AMMPair: INSUFFICIENT_LIQUIDITY_MINTED");
+        _mint(to, liquidity);
+        _update(balance0, balance1);
+
+        emit Mint(msg.sender, amount0Added, amount1Added);
+    }
+
+    function removeLiquidity(uint256 liquidity, address to) external nonReentrant returns (uint256 amount0, uint256 amount1) {
+        require(liquidity > 0, "AMMPair: INSUFFICIENT_LIQUIDITY_BURNED");
+
+        uint256 balance0 = IERC20(token0).balanceOf(address(this));
+        uint256 balance1 = IERC20(token1).balanceOf(address(this));
+
+        amount0 = (liquidity * balance0) / totalSupply;
+        amount1 = (liquidity * balance1) / totalSupply;
+
+        require(amount0 > 0 && amount1 > 0, "AMMPair: INSUFFICIENT_LIQUIDITY_BURNED");
+        _burn(msg.sender, liquidity);
+
+        IERC20(token0).transfer(to, amount0);
+        IERC20(token1).transfer(to, amount1);
+
+        balance0 = IERC20(token0).balanceOf(address(this));
+        balance1 = IERC20(token1).balanceOf(address(this));
+
+        _update(balance0, balance1);
+        emit Burn(msg.sender, to, amount0, amount1);
+    }
+
+    function swap(uint256 amount0Out, uint256 amount1Out, address to) external nonReentrant {
+        require(amount0Out > 0 || amount1Out > 0, "AMMPair: INSUFFICIENT_OUTPUT_AMOUNT");
+        require(to != address(0), "AMMPair: INVALID_TO");
+
+        uint256 _reserve0 = reserve0;
+        uint256 _reserve1 = reserve1;
+        require(amount0Out < _reserve0 && amount1Out < _reserve1, "AMMPair: INSUFFICIENT_LIQUIDITY");
+
+        if (amount0Out > 0) {
+            IERC20(token0).transfer(to, amount0Out);
+        }
+        if (amount1Out > 0) {
+            IERC20(token1).transfer(to, amount1Out);
+        }
+
+        uint256 balance0 = IERC20(token0).balanceOf(address(this));
+        uint256 balance1 = IERC20(token1).balanceOf(address(this));
+
+        uint256 amount0In = balance0 > _reserve0 - amount0Out ? balance0 - (_reserve0 - amount0Out) : 0;
+        uint256 amount1In = balance1 > _reserve1 - amount1Out ? balance1 - (_reserve1 - amount1Out) : 0;
+        require(amount0In > 0 || amount1In > 0, "AMMPair: INSUFFICIENT_INPUT_AMOUNT");
+
+        require(balance0 * balance1 >= _reserve0 * _reserve1, "AMMPair: K");
+        _update(balance0, balance1);
+
+        emit Swap(msg.sender, amount0In, amount1In, amount0Out, amount1Out, to);
+    }
+
 }
