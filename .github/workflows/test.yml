@@ -51,6 +51,8 @@ jobs:
       - name: Run Coverage and Filter
         run: |
           forge coverage --report lcov
+
+          sudo apt-get install lcov -y
           
           lcov --remove lcov.info 'script/*' 'test/*' --output-file filtered-lcov.info
           
