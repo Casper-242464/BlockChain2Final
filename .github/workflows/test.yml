@@ -48,12 +48,21 @@ jobs:
           target: '.'
           fail-on: medium
 
-      - name: Run Coverage and Check Threshold
+      - name: Run Coverage and Filter
         run: |
-          forge coverage --report summary --match-path "src/*.sol" > coverage_report.md
-          COVERAGE=$(grep "Total" coverage_report.md | awk '{print $3}' | cut -d'.' -f1)
+          forge coverage --report lcov
+          
+          lcov --remove lcov.info 'script/*' 'test/*' --output-file filtered-lcov.info
+          
+          lcov --summary filtered-lcov.info > coverage_summary.txt
+          cat coverage_summary.txt
+          
+          COVERAGE=$(grep "lines......" coverage_summary.txt | grep -oE "[0-9]+\.[0-9]+" | head -1 | cut -d'.' -f1)
+          
+          echo "Filtered Coverage: $COVERAGE%"
+          
           if [ "$COVERAGE" -lt 90 ]; then
-            echo "Coverage is below 90% ($COVERAGE%)"
+            echo "Coverage is below 90%  ($COVERAGE%)"
             exit 1
           fi
 
