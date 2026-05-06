@@ -72,4 +72,29 @@ contract AMMFactory is Initializable, UUPSUpgradeable, Ownable2StepUpgradeable, 
         );
         predicted = address(uint160(uint256(rawAddress)));
     }
+
+    function setFeeRecipient(address newRecipient) external onlyOwner {
+        require(newRecipient != address(0), "AMMFactory: ZERO_ADDRESS");
+        emit FeeRecipientUpdated(feeRecipient, newRecipient);
+        feeRecipient = newRecipient;
+    }
+
+    function allPairsLength() external view returns (uint256) {
+        return allPairs.length;
+    }
+
+    function sortTokens(address tokenA, address tokenB) public pure returns (address token0, address token1) {
+        require(tokenA != tokenB, "AMMFactory: IDENTICAL_ADDRESSES");
+        (token0, token1) = tokenA < tokenB ? (tokenA, tokenB) : (tokenB, tokenA);
+    }
+
+    function _registerPair(address token0, address token1, address pair) internal {
+        getPair[token0][token1] = pair;
+        getPair[token1][token0] = pair;
+        allPairs.push(pair);
+    }
+
+    function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
+
+    uint256[45] private __gap;
 }
