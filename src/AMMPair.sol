@@ -30,6 +30,7 @@ contract AMMPair is ReentrancyGuard {
     constructor(address _token0, address _token1, address _factory) {
         require(_token0 != _token1, "AMMPair: IDENTICAL_ADDRESSES");
         require(_token0 != address(0) && _token1 != address(0), "AMMPair: ZERO_ADDRESS");
+        require(_factory != address(0), "AMMPair: ZERO_ADDRESS");
         token0 = _token0;
         token1 = _token1;
         factory = _factory;
@@ -61,8 +62,8 @@ contract AMMPair is ReentrancyGuard {
     function addLiquidity(uint256 amount0, uint256 amount1, address to) external nonReentrant returns (uint256 liquidity) {
         require(amount0 > 0 && amount1 > 0, "AMMPair: INSUFFICIENT_AMOUNT");
 
-        IERC20(token0).transferFrom(msg.sender, address(this), amount0);
-        IERC20(token1).transferFrom(msg.sender, address(this), amount1);
+        require(IERC20(token0).transferFrom(msg.sender, address(this), amount0), "AMMPair: TRANSFER_FAILED");
+        require(IERC20(token1).transferFrom(msg.sender, address(this), amount1), "AMMPair: TRANSFER_FAILED");
 
         uint256 balance0 = IERC20(token0).balanceOf(address(this));
         uint256 balance1 = IERC20(token1).balanceOf(address(this));
@@ -98,8 +99,8 @@ contract AMMPair is ReentrancyGuard {
         require(amount0 > 0 && amount1 > 0, "AMMPair: INSUFFICIENT_LIQUIDITY_BURNED");
         _burn(msg.sender, liquidity);
 
-        IERC20(token0).transfer(to, amount0);
-        IERC20(token1).transfer(to, amount1);
+        require(IERC20(token0).transfer(to, amount0), "AMMPair: TRANSFER_FAILED");
+        require(IERC20(token1).transfer(to, amount1), "AMMPair: TRANSFER_FAILED");
 
         balance0 = IERC20(token0).balanceOf(address(this));
         balance1 = IERC20(token1).balanceOf(address(this));
@@ -117,10 +118,10 @@ contract AMMPair is ReentrancyGuard {
         require(amount0Out < _reserve0 && amount1Out < _reserve1, "AMMPair: INSUFFICIENT_LIQUIDITY");
 
         if (amount0Out > 0) {
-            IERC20(token0).transfer(to, amount0Out);
+            require(IERC20(token0).transfer(to, amount0Out), "AMMPair: TRANSFER_FAILED");
         }
         if (amount1Out > 0) {
-            IERC20(token1).transfer(to, amount1Out);
+            require(IERC20(token1).transfer(to, amount1Out), "AMMPair: TRANSFER_FAILED");
         }
 
         uint256 balance0 = IERC20(token0).balanceOf(address(this));

@@ -16,18 +16,15 @@ contract AMMFactory is Initializable, UUPSUpgradeable, Ownable2StepUpgradeable, 
     event FeeRecipientUpdated(address indexed oldRecipient, address indexed newRecipient);
 
     function initialize(address owner_) external initializer {
-        if (owner_ == address(0)) {
-            owner_ = _msgSender();
-        }
+        address initialOwner = owner_ == address(0) ? _msgSender() : owner_;
+        require(_msgSender() == initialOwner, "AMMFactory: UNAUTHORIZED");
+
         __Ownable2Step_init();
         __UUPSUpgradeable_init();
         __ReentrancyGuard_init();
 
-        if (owner_ != _msgSender()) {
-            transferOwnership(owner_);
-        }
-
-        feeRecipient = owner_;
+        _transferOwnership(initialOwner);
+        feeRecipient = initialOwner;
     }
 
     function createPair(address tokenA, address tokenB) external nonReentrant returns (address pair) {
