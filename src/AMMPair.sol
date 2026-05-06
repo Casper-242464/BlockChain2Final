@@ -136,4 +136,41 @@ contract AMMPair is ReentrancyGuard {
         emit Swap(msg.sender, amount0In, amount1In, amount0Out, amount1Out, to);
     }
 
+    function quote(uint256 amountA, uint256 reserveA, uint256 reserveB) public pure returns (uint256) {
+        require(amountA > 0, "AMMPair: INSUFFICIENT_AMOUNT");
+        require(reserveA > 0 && reserveB > 0, "AMMPair: INSUFFICIENT_LIQUIDITY");
+        return (amountA * reserveB) / reserveA;
+    }
+
+    function _transfer(address from, address to, uint256 amount) internal {
+        require(from != address(0), "AMMPair: TRANSFER_FROM_ZERO_ADDRESS");
+        require(to != address(0), "AMMPair: TRANSFER_TO_ZERO_ADDRESS");
+
+        uint256 fromBalance = balanceOf[from];
+        require(fromBalance >= amount, "AMMPair: TRANSFER_AMOUNT_EXCEEDS_BALANCE");
+        balanceOf[from] = fromBalance - amount;
+        balanceOf[to] += amount;
+
+        emit Transfer(from, to, amount);
+    }
+
+    function _mint(address to, uint256 value) private {
+        totalSupply += value;
+        balanceOf[to] += value;
+        emit Transfer(address(0), to, value);
+    }
+
+    function _burn(address from, uint256 value) private {
+        uint256 fromBalance = balanceOf[from];
+        require(fromBalance >= value, "AMMPair: BURN_EXCESSIVE");
+        balanceOf[from] = fromBalance - value;
+        totalSupply -= value;
+        emit Transfer(from, address(0), value);
+    }
+
+    function _update(uint256 balance0_, uint256 balance1_) private {
+        reserve0 = balance0_;
+        reserve1 = balance1_;
+        emit Sync(balance0_, balance1_);
+    }
 }
