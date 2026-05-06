@@ -52,19 +52,21 @@ jobs:
         run: |
           sudo apt-get install lcov -y
 
-          forge coverage --report summary --report lcov --ir-minimum > coverage_report.md
+          forge coverage --report lcov --ir-minimum
           
           lcov --remove lcov.info 'script/*' 'test/*' --ignore-errors unused -o filtered-lcov.info
           
-          COVERAGE=$(grep -oE "[0-9]+\.[0-9]+%" coverage_report.md | head -1 | cut -d'.' -f1)
+          lcov --list filtered-lcov.info > filtered_summary.txt
           
-          echo "Filtered Coverage: $COVERAGE%"
+          COVERAGE=$(grep "Total:" filtered_summary.txt | grep -oE "[0-9]+\.[0-9]+" | head -1 | cut -d'.' -f1)
           
-          if [ "$COVERAGE" -lt 90 ]; then
-            echo "Coverage is below the 90%: ($COVERAGE%)"
+          echo "Actual Logic Coverage: $COVERAGE%"
+          
+          if [ -z "$COVERAGE" ] || [ "$COVERAGE" -lt 90 ]; then
+            echo "Error: Coverage is too low or no source files found!"
             exit 1
           fi
-          
+
       - name: Upload Coverage Report
         uses: actions/upload-artifact@v4
         with:
