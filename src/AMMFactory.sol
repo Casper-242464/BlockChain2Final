@@ -58,4 +58,18 @@ contract AMMFactory is Initializable, UUPSUpgradeable, Ownable2StepUpgradeable, 
         _registerPair(token0, token1, pair);
         emit PairCreatedFallback(token0, token1, pair, allPairs.length);
     }
+
+    function pairFor(address tokenA, address tokenB) external view returns (address predicted) {
+        (address token0, address token1) = sortTokens(tokenA, tokenB);
+        bytes32 salt = keccak256(abi.encodePacked(token0, token1));
+        bytes32 rawAddress = keccak256(
+            abi.encodePacked(
+                bytes1(0xff),
+                address(this),
+                salt,
+                keccak256(abi.encodePacked(type(AMMPair).creationCode, abi.encode(token0, token1, address(this))))
+            )
+        );
+        predicted = address(uint160(uint256(rawAddress)));
+    }
 }
