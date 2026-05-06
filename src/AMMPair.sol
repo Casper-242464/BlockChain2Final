@@ -173,4 +173,22 @@ contract AMMPair is ReentrancyGuard {
         reserve1 = balance1_;
         emit Sync(balance0_, balance1_);
     }
+
+    function sqrt(uint256 y) internal pure returns (uint256 z) {
+        if (y == 0) {
+            return 0;
+        }
+        assembly {
+            let x := add(div(y, 2), 1)
+            z := x
+            for {} 1 {} {
+                let xNew := div(add(div(y, x), x), 2)
+                if iszero(lt(xNew, z)) {
+                    break
+                }
+                z := xNew
+                x := xNew
+            }
+        }
+    }
 }
