@@ -50,24 +50,21 @@ jobs:
 
       - name: Run Coverage and Filter
         run: |
-          forge coverage --report lcov
-
           sudo apt-get install lcov -y
+
+          forge coverage --report summary --report lcov --ir-minimum > coverage_report.md
           
-          lcov --remove lcov.info 'script/*' 'test/*' --output-file filtered-lcov.info
+          lcov --remove lcov.info 'script/*' 'test/*' --ignore-errors unused -o filtered-lcov.info
           
-          lcov --summary filtered-lcov.info > coverage_summary.txt
-          cat coverage_summary.txt
-          
-          COVERAGE=$(grep "lines......" coverage_summary.txt | grep -oE "[0-9]+\.[0-9]+" | head -1 | cut -d'.' -f1)
+          COVERAGE=$(grep -oE "[0-9]+\.[0-9]+%" coverage_report.md | head -1 | cut -d'.' -f1)
           
           echo "Filtered Coverage: $COVERAGE%"
           
           if [ "$COVERAGE" -lt 90 ]; then
-            echo "Coverage is below 90%  ($COVERAGE%)"
+            echo "Coverage is below the 90%: ($COVERAGE%)"
             exit 1
           fi
-
+          
       - name: Upload Coverage Report
         uses: actions/upload-artifact@v4
         with:
