@@ -1,0 +1,6 @@
+{
+  "exclude_dependencies": true,
+  "exclude_informational": true,
+  "exclude_low": true,
+  "detectors_to_exclude": "reentrancy-no-eth"
+}
