@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
-// solhint-disable use-natspec const-name-snakecase immutable-vars-naming gas-indexed-events gas-custom-errors
+// solhint-disable use-natspec const-name-snakecase immutable-vars-naming gas-indexed-events gas-custom-errors import-path-check
 
 import {IERC20} from "forge-std/interfaces/IERC20.sol";
 import {ReentrancyGuard} from "./AMMUpgradeHelpers.sol";
 
 /// @title AMM Pair
+/// @author anonymous
 /// @notice Liquidity pair contract for token swaps and LP token minting and burning.
 contract AMMPair is ReentrancyGuard {
     /// @notice First token in the pair, sorted by address.
@@ -34,14 +35,33 @@ contract AMMPair is ReentrancyGuard {
     uint256 public constant MINIMUM_LIQUIDITY = 1_000;
 
     /// @notice Emitted when an allowance is approved.
+    /// @param owner The owner of the tokens.
+    /// @param spender The spender of the tokens.
+    /// @param value The amount approved.
     event Approval(address indexed owner, address indexed spender, uint256 indexed value);
-    /// @notice Emitted when LP tokens are transferred.
+    /// @notice Emitted when tokens are transferred.
+    /// @param from The sender.
+    /// @param to The recipient.
+    /// @param value The amount transferred.
     event Transfer(address indexed from, address indexed to, uint256 indexed value);
     /// @notice Emitted when liquidity is minted.
+    /// @param sender The sender.
+    /// @param amount0 The amount of token0 added.
+    /// @param amount1 The amount of token1 added.
     event Mint(address indexed sender, uint256 indexed amount0, uint256 indexed amount1);
     /// @notice Emitted when liquidity is burned.
+    /// @param sender The sender.
+    /// @param to The recipient.
+    /// @param amount0 The amount of token0 removed.
+    /// @param amount1 The amount of token1 removed.
     event Burn(address indexed sender, address indexed to, uint256 indexed amount0, uint256 amount1);
-    /// @notice Emitted when a swap is executed.
+    /// @notice Emitted when a swap occurs.
+    /// @param sender The sender.
+    /// @param amount0In The amount of token0 input.
+    /// @param amount1In The amount of token1 input.
+    /// @param amount0Out The amount of token0 output.
+    /// @param amount1Out The amount of token1 output.
+    /// @param to The recipient.
     event Swap(
         address indexed sender,
         uint256 indexed amount0In,
@@ -50,7 +70,9 @@ contract AMMPair is ReentrancyGuard {
         uint256 amount1Out,
         address indexed to
     );
-    /// @notice Emitted when reserves are updated.
+    /// @notice Emitted when reserves are synced.
+    /// @param reserve0 The new reserve0.
+    /// @param reserve1 The new reserve1.
     event Sync(uint256 indexed reserve0, uint256 indexed reserve1);
 
     constructor(address _token0, address _token1, address _factory) {
@@ -62,17 +84,30 @@ contract AMMPair is ReentrancyGuard {
         factory = _factory;
     }
 
+    /// @notice Approves a spender to spend tokens.
+    /// @param spender The spender address.
+    /// @param value The amount to approve.
+    /// @return True if successful.
     function approve(address spender, uint256 value) external returns (bool) {
         allowance[msg.sender][spender] = value;
         emit Approval(msg.sender, spender, value);
         return true;
     }
 
+    /// @notice Transfers tokens to a recipient.
+    /// @param to The recipient address.
+    /// @param value The amount to transfer.
+    /// @return True if successful.
     function transfer(address to, uint256 value) external returns (bool) {
         _transfer(msg.sender, to, value);
         return true;
     }
 
+    /// @notice Transfers tokens from one address to another.
+    /// @param from The sender address.
+    /// @param to The recipient address.
+    /// @param value The amount to transfer.
+    /// @return True if successful.
     function transferFrom(address from, address to, uint256 value) external returns (bool) {
         uint256 allowed = allowance[from][msg.sender];
         require(value <= allowed, "AMMPair: EXCEEDS_ALLOWANCE");
@@ -81,10 +116,18 @@ contract AMMPair is ReentrancyGuard {
         return true;
     }
 
+    /// @notice Returns the current reserves.
+    /// @return reserve0 The reserve of token0.
+    /// @return reserve1 The reserve of token1.
     function getReserves() public view returns (uint256, uint256) {
         return (reserve0, reserve1);
     }
 
+    /// @notice Adds liquidity to the pair.
+    /// @param amount0 The amount of token0 to add.
+    /// @param amount1 The amount of token1 to add.
+    /// @param to The recipient of the liquidity tokens.
+    /// @return liquidity The amount of liquidity tokens minted.
     function addLiquidity(uint256 amount0, uint256 amount1, address to)
         external
         nonReentrant
@@ -117,6 +160,11 @@ contract AMMPair is ReentrancyGuard {
         emit Mint(msg.sender, amount0Added, amount1Added);
     }
 
+    /// @notice Removes liquidity from the pair.
+    /// @param liquidity The amount of liquidity tokens to burn.
+    /// @param to The recipient of the tokens.
+    /// @return amount0 The amount of token0 returned.
+    /// @return amount1 The amount of token1 returned.
     function removeLiquidity(uint256 liquidity, address to)
         external
         nonReentrant
@@ -143,6 +191,10 @@ contract AMMPair is ReentrancyGuard {
         emit Burn(msg.sender, to, amount0, amount1);
     }
 
+    /// @notice Swaps tokens.
+    /// @param amount0Out The amount of token0 to output.
+    /// @param amount1Out The amount of token1 to output.
+    /// @param to The recipient.
     function swap(uint256 amount0Out, uint256 amount1Out, address to) external nonReentrant {
         require(amount0Out > 0 || amount1Out > 0, "AMMPair: INSUFFICIENT_OUTPUT");
         require(to != address(0), "AMMPair: INVALID_TO");
@@ -171,6 +223,11 @@ contract AMMPair is ReentrancyGuard {
         emit Swap(msg.sender, amount0In, amount1In, amount0Out, amount1Out, to);
     }
 
+    /// @notice Quotes the output amount for a given input.
+    /// @param amountA The input amount.
+    /// @param reserveA The reserve of the input token.
+    /// @param reserveB The reserve of the output token.
+    /// @return The output amount.
     function quote(uint256 amountA, uint256 reserveA, uint256 reserveB) public pure returns (uint256) {
         require(amountA > 0, "AMMPair: INSUFFICIENT_AMOUNT");
         require(reserveA > 0 && reserveB > 0, "AMMPair: INSUFFICIENT_LIQUIDITY");
