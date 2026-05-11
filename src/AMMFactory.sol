@@ -9,7 +9,7 @@ import {
 } from "./AMMUpgradeHelpers.sol";
 import {AMMPair} from "./AMMPair.sol";
 
-// solhint-disable gas-custom-errors gas-indexed-events
+/* solhint-disable gas-custom-errors gas-indexed-events */
 /// @title AMM Factory
 /// @author anonymous
 /// @notice Factory contract for creating and managing AMM pairs.

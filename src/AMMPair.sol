@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
-// solhint-disable use-natspec const-name-snakecase immutable-vars-naming gas-indexed-events gas-custom-errors import-path-check
+/* solhint-disable use-natspec const-name-snakecase immutable-vars-naming gas-indexed-events gas-custom-errors import-path-check */
 
 import {IERC20} from "forge-std/interfaces/IERC20.sol";
 import {ReentrancyGuard} from "./AMMUpgradeHelpers.sol";

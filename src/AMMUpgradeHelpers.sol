@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-// solhint-disable one-contract-per-file use-natspec func-name-mixedcase no-empty-blocks reason-string gas-small-strings gas-custom-errors avoid-low-level-calls no-inline-assembly gas-calldata-parameters immutable-vars-naming
+/* solhint-disable one-contract-per-file use-natspec func-name-mixedcase no-empty-blocks reason-string gas-small-strings gas-custom-errors avoid-low-level-calls no-inline-assembly gas-calldata-parameters immutable-vars-naming */
 
 /// @title Initializable
 /// @author OpenZeppelin
@@ -35,11 +35,12 @@ abstract contract Initializable {
 abstract contract ContextUpgradeable is Initializable {
     /// @notice Initializes the context.
     function __Context_init() internal onlyInitializing {
-        // Initialization logic if needed
+        return;
     }
+
     /// @notice Initializes the context without chaining.
     function __Context_init_unchained() internal onlyInitializing {
-        // Unchained initialization
+        return;
     }
 
     /// @notice Returns the message sender.
@@ -149,7 +150,7 @@ abstract contract ERC1967UpgradeUpgradeable is Initializable {
 
     /// @notice Initializes the ERC1967 upgrade.
     function __ERC1967Upgrade_init() internal onlyInitializing {
-        // Initialization for ERC1967
+        return;
     }
 
     /// @notice Gets the current implementation address.
