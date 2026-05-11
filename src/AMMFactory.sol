@@ -149,7 +149,7 @@ contract AMMFactory is Initializable, UUPSUpgradeable, Ownable2StepUpgradeable, 
     }
 
     function _authorizeUpgrade(address) internal override onlyOwner {
-        // Ownership is enforced by onlyOwner.
+        return;
     }
 
     uint256[45] private __gap;
