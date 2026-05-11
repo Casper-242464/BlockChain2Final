@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
+// solhint-disable one-contract-per-file use-natspec func-name-mixedcase no-empty-blocks reason-string gas-small-strings gas-custom-errors avoid-low-level-calls no-inline-assembly gas-calldata-parameters immutable-vars-naming
 
 abstract contract Initializable {
     bool private _initialized;

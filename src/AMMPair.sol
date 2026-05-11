@@ -1,38 +1,57 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
+// solhint-disable use-natspec const-name-snakecase immutable-vars-naming gas-indexed-events gas-custom-errors
 
-import "forge-std/interfaces/IERC20.sol";
-import "./AMMUpgradeHelpers.sol";
+import { IERC20 } from "forge-std/interfaces/IERC20.sol";
+import { ReentrancyGuard } from "./AMMUpgradeHelpers.sol";
 
+/// @title AMM Pair
+/// @notice Liquidity pair contract for token swaps and LP token minting and burning.
 contract AMMPair is ReentrancyGuard {
+    /// @notice First token in the pair, sorted by address.
     address public immutable token0;
+    /// @notice Second token in the pair, sorted by address.
     address public immutable token1;
+    /// @notice Factory contract that deployed this pair.
     address public immutable factory;
+    /// @notice Total LP token supply.
     uint256 public totalSupply;
+    /// @notice LP token balances by account.
     mapping(address => uint256) public balanceOf;
+    /// @notice LP token allowances by owner and spender.
     mapping(address => mapping(address => uint256)) public allowance;
 
     uint256 private reserve0;
     uint256 private reserve1;
 
+    /// @notice ERC20 token name for this pair.
     string public constant name = "DeFi Super-App LP Token";
+    /// @notice ERC20 token symbol for this pair.
     string public constant symbol = "DSL";
+    /// @notice ERC20 token decimals for this pair.
     uint8 public constant decimals = 18;
+    /// @notice Minimum liquidity that remains locked in the pair.
     uint256 public constant MINIMUM_LIQUIDITY = 1_000;
 
-    event Approval(address indexed owner, address indexed spender, uint256 value);
-    event Transfer(address indexed from, address indexed to, uint256 value);
-    event Mint(address indexed sender, uint256 amount0, uint256 amount1);
-    event Burn(address indexed sender, address indexed to, uint256 amount0, uint256 amount1);
+    /// @notice Emitted when an allowance is approved.
+    event Approval(address indexed owner, address indexed spender, uint256 indexed value);
+    /// @notice Emitted when LP tokens are transferred.
+    event Transfer(address indexed from, address indexed to, uint256 indexed value);
+    /// @notice Emitted when liquidity is minted.
+    event Mint(address indexed sender, uint256 indexed amount0, uint256 indexed amount1);
+    /// @notice Emitted when liquidity is burned.
+    event Burn(address indexed sender, address indexed to, uint256 indexed amount0, uint256 amount1);
+    /// @notice Emitted when a swap is executed.
     event Swap(
         address indexed sender,
-        uint256 amount0In,
+        uint256 indexed amount0In,
         uint256 amount1In,
         uint256 amount0Out,
         uint256 amount1Out,
         address indexed to
     );
-    event Sync(uint256 reserve0, uint256 reserve1);
+    /// @notice Emitted when reserves are updated.
+    event Sync(uint256 indexed reserve0, uint256 indexed reserve1);
 
     constructor(address _token0, address _token1, address _factory) {
         require(_token0 != _token1, "AMMPair: IDENTICAL_ADDRESSES");
@@ -56,7 +75,7 @@ contract AMMPair is ReentrancyGuard {
 
     function transferFrom(address from, address to, uint256 value) external returns (bool) {
         uint256 allowed = allowance[from][msg.sender];
-        require(allowed >= value, "AMMPair: TRANSFER_AMOUNT_EXCEEDS_ALLOWANCE");
+        require(value <= allowed, "AMMPair: EXCEEDS_ALLOWANCE");
         allowance[from][msg.sender] = allowed - value;
         _transfer(from, to, value);
         return true;
@@ -91,7 +110,7 @@ contract AMMPair is ReentrancyGuard {
             liquidity = liquidity0 < liquidity1 ? liquidity0 : liquidity1;
         }
 
-        require(liquidity > 0, "AMMPair: INSUFFICIENT_LIQUIDITY_MINTED");
+        require(liquidity > 0, "AMMPair: INSUFFICIENT_LIQUIDITY");
         _mint(to, liquidity);
         _update(balance0, balance1);
 
@@ -103,7 +122,7 @@ contract AMMPair is ReentrancyGuard {
         nonReentrant
         returns (uint256 amount0, uint256 amount1)
     {
-        require(liquidity > 0, "AMMPair: INSUFFICIENT_LIQUIDITY_BURNED");
+        require(liquidity > 0, "AMMPair: INSUFFICIENT_LIQUIDITY");
 
         uint256 balance0 = IERC20(token0).balanceOf(address(this));
         uint256 balance1 = IERC20(token1).balanceOf(address(this));
@@ -111,7 +130,7 @@ contract AMMPair is ReentrancyGuard {
         amount0 = (liquidity * balance0) / totalSupply;
         amount1 = (liquidity * balance1) / totalSupply;
 
-        require(amount0 > 0 && amount1 > 0, "AMMPair: INSUFFICIENT_LIQUIDITY_BURNED");
+        require(amount0 > 0 && amount1 > 0, "AMMPair: INSUFFICIENT_LIQUIDITY");
         _burn(msg.sender, liquidity);
 
         require(IERC20(token0).transfer(to, amount0), "AMMPair: TRANSFER_FAILED");
@@ -125,7 +144,7 @@ contract AMMPair is ReentrancyGuard {
     }
 
     function swap(uint256 amount0Out, uint256 amount1Out, address to) external nonReentrant {
-        require(amount0Out > 0 || amount1Out > 0, "AMMPair: INSUFFICIENT_OUTPUT_AMOUNT");
+        require(amount0Out > 0 || amount1Out > 0, "AMMPair: INSUFFICIENT_OUTPUT");
         require(to != address(0), "AMMPair: INVALID_TO");
 
         uint256 _reserve0 = reserve0;
@@ -144,7 +163,7 @@ contract AMMPair is ReentrancyGuard {
 
         uint256 amount0In = balance0 > _reserve0 - amount0Out ? balance0 - (_reserve0 - amount0Out) : 0;
         uint256 amount1In = balance1 > _reserve1 - amount1Out ? balance1 - (_reserve1 - amount1Out) : 0;
-        require(amount0In > 0 || amount1In > 0, "AMMPair: INSUFFICIENT_INPUT_AMOUNT");
+        require(amount0In > 0 || amount1In > 0, "AMMPair: INSUFFICIENT_INPUT");
 
         require(balance0 * balance1 >= _reserve0 * _reserve1, "AMMPair: K");
         _update(balance0, balance1);
@@ -159,11 +178,11 @@ contract AMMPair is ReentrancyGuard {
     }
 
     function _transfer(address from, address to, uint256 amount) internal {
-        require(from != address(0), "AMMPair: TRANSFER_FROM_ZERO_ADDRESS");
-        require(to != address(0), "AMMPair: TRANSFER_TO_ZERO_ADDRESS");
+        require(from != address(0), "AMMPair: TRANSFER_FROM_ZERO");
+        require(to != address(0), "AMMPair: TRANSFER_TO_ZERO");
 
         uint256 fromBalance = balanceOf[from];
-        require(fromBalance >= amount, "AMMPair: TRANSFER_AMOUNT_EXCEEDS_BALANCE");
+        require(fromBalance >= amount, "AMMPair: EXCEEDS_BALANCE");
         balanceOf[from] = fromBalance - amount;
         balanceOf[to] += amount;
 
@@ -194,17 +213,11 @@ contract AMMPair is ReentrancyGuard {
         if (y == 0) {
             return 0;
         }
-        assembly {
-            let x := add(div(y, 2), 1)
-            z := x
-            for {} 1 {} {
-                let xNew := div(add(div(y, x), x), 2)
-                if iszero(lt(xNew, z)) {
-                    break
-                }
-                z := xNew
-                x := xNew
-            }
+        uint256 x = y;
+        z = (x + 1) / 2;
+        while (z < x) {
+            x = z;
+            z = (y / z + z) / 2;
         }
     }
 }
