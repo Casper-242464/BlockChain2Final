@@ -2,8 +2,8 @@
 pragma solidity 0.8.24;
 // solhint-disable use-natspec const-name-snakecase immutable-vars-naming gas-indexed-events gas-custom-errors
 
-import { IERC20 } from "forge-std/interfaces/IERC20.sol";
-import { ReentrancyGuard } from "./AMMUpgradeHelpers.sol";
+import {IERC20} from "forge-std/interfaces/IERC20.sol";
+import {ReentrancyGuard} from "./AMMUpgradeHelpers.sol";
 
 /// @title AMM Pair
 /// @notice Liquidity pair contract for token swaps and LP token minting and burning.
