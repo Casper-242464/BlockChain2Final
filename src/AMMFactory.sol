@@ -1,13 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
-import {
-    Initializable,
-    UUPSUpgradeable,
-    Ownable2StepUpgradeable,
-    ReentrancyGuardUpgradeable
-} from "./AMMUpgradeHelpers.sol";
-import {AMMPair} from "./AMMPair.sol";
+import { Initializable, UUPSUpgradeable, Ownable2StepUpgradeable, ReentrancyGuardUpgradeable } from "./AMMUpgradeHelpers.sol";
+import { AMMPair } from "./AMMPair.sol";
 
 // solhint-disable gas-custom-errors gas-indexed-events
 /// @title AMM Factory
