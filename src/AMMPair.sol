@@ -24,7 +24,14 @@ contract AMMPair is ReentrancyGuard {
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Mint(address indexed sender, uint256 amount0, uint256 amount1);
     event Burn(address indexed sender, address indexed to, uint256 amount0, uint256 amount1);
-    event Swap(address indexed sender, uint256 amount0In, uint256 amount1In, uint256 amount0Out, uint256 amount1Out, address indexed to);
+    event Swap(
+        address indexed sender,
+        uint256 amount0In,
+        uint256 amount1In,
+        uint256 amount0Out,
+        uint256 amount1Out,
+        address indexed to
+    );
     event Sync(uint256 reserve0, uint256 reserve1);
 
     constructor(address _token0, address _token1, address _factory) {
@@ -59,7 +66,11 @@ contract AMMPair is ReentrancyGuard {
         return (reserve0, reserve1);
     }
 
-    function addLiquidity(uint256 amount0, uint256 amount1, address to) external nonReentrant returns (uint256 liquidity) {
+    function addLiquidity(uint256 amount0, uint256 amount1, address to)
+        external
+        nonReentrant
+        returns (uint256 liquidity)
+    {
         require(amount0 > 0 && amount1 > 0, "AMMPair: INSUFFICIENT_AMOUNT");
 
         require(IERC20(token0).transferFrom(msg.sender, address(this), amount0), "AMMPair: TRANSFER_FAILED");
@@ -87,7 +98,11 @@ contract AMMPair is ReentrancyGuard {
         emit Mint(msg.sender, amount0Added, amount1Added);
     }
 
-    function removeLiquidity(uint256 liquidity, address to) external nonReentrant returns (uint256 amount0, uint256 amount1) {
+    function removeLiquidity(uint256 liquidity, address to)
+        external
+        nonReentrant
+        returns (uint256 amount0, uint256 amount1)
+    {
         require(liquidity > 0, "AMMPair: INSUFFICIENT_LIQUIDITY_BURNED");
 
         uint256 balance0 = IERC20(token0).balanceOf(address(this));

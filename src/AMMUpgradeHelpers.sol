@@ -46,18 +46,21 @@ library AddressUpgradeable {
         return functionDelegateCall(target, data, "Address: low-level delegate call failed");
     }
 
-    function functionDelegateCall(address target, bytes memory data, string memory errorMessage) internal returns (bytes memory) {
+    function functionDelegateCall(address target, bytes memory data, string memory errorMessage)
+        internal
+        returns (bytes memory)
+    {
         require(isContract(target), "Address: delegate call to non-contract");
 
         (bool success, bytes memory returndata) = target.delegatecall(data);
         return verifyCallResult(success, returndata, errorMessage);
     }
 
-    function verifyCallResult(
-        bool success,
-        bytes memory returndata,
-        string memory errorMessage
-    ) internal pure returns (bytes memory) {
+    function verifyCallResult(bool success, bytes memory returndata, string memory errorMessage)
+        internal
+        pure
+        returns (bytes memory)
+    {
         if (success) {
             return returndata;
         }
@@ -116,11 +119,7 @@ abstract contract ERC1967UpgradeUpgradeable is Initializable {
         emit Upgraded(newImplementation);
     }
 
-    function _upgradeToAndCallSecure(
-        address newImplementation,
-        bytes memory data,
-        bool forceCall
-    ) internal {
+    function _upgradeToAndCallSecure(address newImplementation, bytes memory data, bool forceCall) internal {
         address oldImplementation = _getImplementation();
         _setImplementation(newImplementation);
         if (forceCall && data.length > 0) {
