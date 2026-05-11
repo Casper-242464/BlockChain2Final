@@ -41,18 +41,22 @@ contract AMMFactory is Initializable, UUPSUpgradeable, Ownable2StepUpgradeable, 
     /// @param newRecipient The new fee recipient.
     event FeeRecipientUpdated(address indexed oldRecipient, address indexed newRecipient);
 
+    constructor() {
+        _disableInitializers();
+    }
+
     /// @notice Initialize the factory with an owner.
-    /// @param owner_ The owner address, or zero to set the caller as owner.
+    /// @param owner_ The owner address.
     function initialize(address owner_) external initializer {
-        address initialOwner = owner_ == address(0) ? _msgSender() : owner_;
-        require(_msgSender() == initialOwner, "AMMFactory: UNAUTHORIZED");
+        require(owner_ != address(0), "AMMFactory: ZERO_ADDRESS");
+        require(_msgSender() == owner_, "AMMFactory: UNAUTHORIZED");
 
         __Ownable2Step_init();
         __UUPSUpgradeable_init();
         __ReentrancyGuard_init();
 
-        _transferOwnership(initialOwner);
-        feeRecipient = initialOwner;
+        _transferOwnership(owner_);
+        feeRecipient = owner_;
     }
 
     /// @notice Create a new pair using CREATE2.
@@ -144,9 +148,8 @@ contract AMMFactory is Initializable, UUPSUpgradeable, Ownable2StepUpgradeable, 
         allPairs.push(pair);
     }
 
-    function _authorizeUpgrade(address newImplementation) internal override onlyOwner {
+    function _authorizeUpgrade(address) internal override onlyOwner {
         // Ownership is enforced by onlyOwner.
-        newImplementation;
     }
 
     uint256[45] private __gap;

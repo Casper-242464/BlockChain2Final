@@ -2,7 +2,7 @@
 pragma solidity 0.8.24;
 /* solhint-disable use-natspec const-name-snakecase immutable-vars-naming gas-indexed-events gas-custom-errors import-path-check */
 
-import {IERC20} from "forge-std/interfaces/IERC20.sol";
+import {IERC20} from "./IERC20.sol";
 import {ReentrancyGuard} from "./AMMUpgradeHelpers.sol";
 
 /// @title AMM Pair
@@ -143,7 +143,7 @@ contract AMMPair is ReentrancyGuard {
         uint256 amount0Added = balance0 - reserve0;
         uint256 amount1Added = balance1 - reserve1;
 
-        if (totalSupply == 0) {
+        if (totalSupply < MINIMUM_LIQUIDITY) {
             uint256 root = sqrt(amount0Added * amount1Added);
             liquidity = root - MINIMUM_LIQUIDITY;
             _mint(address(0), MINIMUM_LIQUIDITY);
@@ -267,8 +267,8 @@ contract AMMPair is ReentrancyGuard {
     }
 
     function sqrt(uint256 y) internal pure returns (uint256 z) {
-        if (y == 0) {
-            return 0;
+        if (y < 2) {
+            return y;
         }
         uint256 x = y;
         z = (x + 1) / 2;

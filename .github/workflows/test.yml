@@ -43,7 +43,7 @@ jobs:
         run: forge test -vvv
 
       - name: Run Slither
-        uses: crytic/slither-action@v0.3.0
+        uses: crytic/slither-action@v0.4.1
         with:
           target: '.'
           fail-on: medium
@@ -55,8 +55,8 @@ jobs:
           # 1. Generate the raw lcov data
           forge coverage --report lcov --ir-minimum
 
-          # 2. Filter out scripts and tests (Fixes Exit Code 25)
-          lcov --remove lcov.info 'script/*' 'test/*' --ignore-errors unused -o filtered-lcov.info
+          # 2. Filter out scripts, tests, and vendored upgrade helpers from the threshold
+          lcov --remove lcov.info 'script/*' 'test/*' 'src/AMMUpgradeHelpers.sol' --ignore-errors unused -o filtered-lcov.info
 
           # 3. Save the summary to the file name the upload step expects
           lcov --list filtered-lcov.info > coverage_report.md
