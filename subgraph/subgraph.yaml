@@ -15,18 +15,10 @@ dataSources:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - EIP712DomainChanged
-        - ProposalCanceled
         - ProposalCreated
-        - ProposalExecuted
-        - ProposalQueued
-        - ProposalThresholdSet
-        - QuorumNumeratorUpdated
-        - TimelockChange
         - VoteCast
-        - VoteCastWithParams
-        - VotingDelaySet
-        - VotingPeriodSet
+        - ProposalQueued
+        - ProposalExecuted
       abis:
         - name: DSAGovernor
           file: ./abis/DSAGovernor.json
