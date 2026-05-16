@@ -21,3 +21,12 @@ import {IVotes} from "@openzeppelin/contracts/governance/utils/IVotes.sol";
 import {
     TimelockController
 } from "@openzeppelin/contracts/governance/TimelockController.sol";
+
+contract DSAGovernor is
+    Governor,
+    GovernorSettings,
+    GovernorCountingSimple,
+    GovernorVotes,
+    GovernorVotesQuorumFraction,
+    GovernorTimelockControl
+{}
