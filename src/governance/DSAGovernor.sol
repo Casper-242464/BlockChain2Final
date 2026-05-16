@@ -40,4 +40,13 @@ contract DSAGovernor is
         GovernorVotesQuorumFraction(4)
         GovernorTimelockControl(_timelock)
     {}
+
+    function votingDelay()
+        public
+        view
+        override(Governor, GovernorSettings)
+        returns (uint256)
+    {
+        return super.votingDelay();
+    }
 }
