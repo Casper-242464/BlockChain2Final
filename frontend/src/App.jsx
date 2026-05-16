@@ -2,6 +2,7 @@ import { WagmiProvider, createConfig, http } from "wagmi";
 import { mainnet, foundry } from "wagmi/chains";
 import { ConnectKitProvider, ConnectKitButton, getDefaultConfig } from "connectkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Governance } from "./Governance";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ function App() {
                 <h2>Welcome to the DAO</h2>
                 <p>Connect your wallet to participate in governance.</p>
               </div>
+              <Governance />
             </main>
           </div>
         </ConnectKitProvider>
