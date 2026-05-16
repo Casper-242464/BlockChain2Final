@@ -29,4 +29,28 @@ contract GovernanceTest is Test {
         timelock.grantRole(timelock.EXECUTOR_ROLE(), address(0));
         vm.stopPrank();
     }
+
+    function test_TokenMetadata() public {
+        assertEq(token.name(), "DSA Token");
+        assertEq(token.symbol(), "DSA");
+    }
+
+    function test_InitialSupply() public {
+        assertEq(token.totalSupply(), INITIAL_SUPPLY);
+    }
+
+    function test_DelegationWorks() public {
+        vm.prank(ADMIN);
+        token.delegate(ADMIN);
+        assertEq(token.getVotes(ADMIN), INITIAL_SUPPLY);
+    }
+
+    function test_TransferUpdatesVotes() public {
+        vm.startPrank(ADMIN);
+        token.delegate(ADMIN);
+        token.transfer(USER, 100 ether);
+        vm.stopPrank();
+
+        assertEq(token.getVotes(ADMIN), INITIAL_SUPPLY - 100 ether);
+    }
 }
