@@ -5,21 +5,19 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const queryClient = new QueryClient();
 
-// В v2 настройка немного изменилась
 const config = createConfig(
   getDefaultConfig({
     chains: [foundry],
     transports: {
       [foundry.id]: http("http://127.0.0.1:8545"),
     },
-    walletConnectProjectId: "YOUR_PROJECT_ID",
+    walletConnectProjectId: "753a47d7e9b630e9d683d3f97d1f8566",
     appName: "DSA Governance DAO",
   }),
 );
 
 function App() {
   return (
-    // Заменили WagmiConfig на WagmiProvider
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <ConnectKitProvider>
