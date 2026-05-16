@@ -1,38 +1,39 @@
 import { WagmiProvider, createConfig, http } from "wagmi";
-import { mainnet, foundry } from "wagmi/chains";
 import { ConnectKitProvider, ConnectKitButton, getDefaultConfig } from "connectkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Governance } from "./Governance";
 
 const queryClient = new QueryClient();
 
-const config = createConfig(
-  getDefaultConfig({
-    chains: [foundry],
-    transports: {
-      [foundry.id]: http("http://127.0.0.1:8545"),
-    },
-    walletConnectProjectId: "753a47d7e9b630e9d683d3f97d1f8566",
-    appName: "DSA Governance DAO",
-  }),
-);
+const anvilChain = {
+  id: 31337,
+  name: "Foundry",
+  nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+  rpcUrls: {
+    default: { http: ["http://127.0.0.1:8545"] },
+    public: { http: ["http://127.0.0.1:8545"] },
+  },
+};
+
+const config = createConfig({
+  chains: [anvilChain],
+  transports: {
+    [anvilChain.id]: http("http://127.0.0.1:8545"),
+  },
+});
 
 function App() {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <ConnectKitProvider>
-          <div style={{ padding: "20px", fontFamily: "sans-serif" }}>
+        <ConnectKitProvider theme="dark" options={{ disableEns: true, avoidExplicitEnabling: true }}>
+          <div style={{ padding: "20px", fontFamily: "sans-serif", backgroundColor: "#121212", minHeight: "100vh", color: "white" }}>
             <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <h1>DSA Governance</h1>
               <ConnectKitButton />
             </header>
 
-            <main style={{ marginTop: "40px" }}>
-              <div className="card">
-                <h2>Welcome to the DAO</h2>
-                <p>Connect your wallet to participate in governance.</p>
-              </div>
+            <main style={{ maxWidth: "600px", margin: "40px auto" }}>
               <Governance />
             </main>
           </div>

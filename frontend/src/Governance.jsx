@@ -1,10 +1,10 @@
-import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import { useAccount, useReadContract, useWriteContract } from "wagmi";
 import { formatEther } from "viem";
-import { TOKEN_ADDRESS, TOKEN_ABI, GOVERNOR_ADDRESS, GOVERNOR_ABI } from "./contracts";
+import { TOKEN_ADDRESS, TOKEN_ABI } from "./contracts";
 
 export function Governance() {
-    const { address } = useAccount();
-    const { writeContract, data: hash } = useWriteContract();
+    const { address, isConnected, chainId } = useAccount();
+    const { writeContract, data: hash, isPending } = useWriteContract();
 
     const { data: balance } = useReadContract({
         address: TOKEN_ADDRESS,
@@ -29,21 +29,30 @@ export function Governance() {
         });
     };
 
+    if (!isConnected) return <div style={{ color: "orange" }}>Wallet not connected!</div>;
+
     return (
-        <div style={{ marginTop: "20px", padding: "20px", border: "1px solid #ccc", borderRadius: "12px" }}>
-            <h2>My Governance Profile</h2>
-            <p><b>Address:</b> {address}</p>
-            <p><b>Token Balance:</b> {balance ? formatEther(balance) : "0"} DSA</p>
-            <p><b>Voting Power:</b> {votes ? formatEther(votes) : "0"} Votes</p>
+        <div style={{ padding: "20px", border: "1px solid #333", borderRadius: "12px", background: "#1a1a1a", color: "white" }}>
+            <h2>DAO Profile</h2>
+            <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
+                <div style={{ flex: 1, background: "#222", padding: "15px", borderRadius: "8px" }}>
+                    <div style={{ color: "#888", fontSize: "0.8em" }}>Balance</div>
+                    <div style={{ fontSize: "1.4em", fontWeight: "bold" }}>{balance ? formatEther(balance) : "0"} DSA</div>
+                </div>
+                <div style={{ flex: 1, background: "#222", padding: "15px", borderRadius: "8px" }}>
+                    <div style={{ color: "#888", fontSize: "0.8em" }}>Voting Power</div>
+                    <div style={{ fontSize: "1.4em", fontWeight: "bold", color: "#4ade80" }}>{votes ? formatEther(votes) : "0"}</div>
+                </div>
+            </div>
 
             <button
                 onClick={handleDelegate}
-                style={{ padding: "10px 20px", backgroundColor: "#007bff", color: "white", border: "none", borderRadius: "8px", cursor: "pointer" }}
+                disabled={isPending}
+                style={{ width: "100%", padding: "12px", backgroundColor: "#007bff", color: "white", border: "none", borderRadius: "8px", cursor: "pointer" }}
             >
-                Delegate to Self (Activate Voting)
+                {isPending ? "Confirming..." : "Delegate to Self (Activate Voting)"}
             </button>
-
-            {hash && <p style={{ color: "green" }}>Transaction sent! Hash: {hash.slice(0, 10)}...</p>}
+            {hash && <p style={{ color: "green", fontSize: "0.8em" }}>Tx Sent! Voting power will update in a few seconds.</p>}
         </div>
     );
 }

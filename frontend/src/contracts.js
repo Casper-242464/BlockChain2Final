@@ -1,18 +1,18 @@
-export const TOKEN_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
-export const TIMELOCK_ADDRESS = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
-export const GOVERNOR_ADDRESS = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
+import { parseAbi } from "viem";
 
-export const TOKEN_ABI = [
+export const TOKEN_ADDRESS = "0x0165878a594ca255338adfa4d48449f69242eb8f";
+export const TIMELOCK_ADDRESS = "0xa513e6e4b8f2a923d98304ec87f64353c4d5c853";
+export const GOVERNOR_ADDRESS = "0x2279b7a0a67db372996a5fab50d91eaa73d2ebe6";
+
+export const TOKEN_ABI = parseAbi([
     "function balanceOf(address owner) view returns (uint256)",
-    "function delegate(address delegatee) public",
-    "function delegates(address account) view returns (address)",
-    "function getVotes(address account) view returns (uint256)"
-];
+    "function delegate(address delegatee)",
+    "function getVotes(address account) view returns (uint256)",
+    "function transfer(address to, uint256 amount) returns (bool)"
+]);
 
-export const GOVERNOR_ABI = [
+export const GOVERNOR_ABI = parseAbi([
     "function propose(address[] targets, uint256[] values, bytes[] calldatas, string description) returns (uint256)",
     "function castVote(uint256 proposalId, uint8 support) returns (uint256)",
-    "function execute(address[] targets, uint256[] values, bytes[] calldatas, bytes32 descriptionHash) payable returns (uint256)",
-    "function state(uint256 proposalId) view returns (uint8)",
-    "function proposalThreshold() view returns (uint256)"
-];
+    "function state(uint256 proposalId) view returns (uint8)"
+]);
