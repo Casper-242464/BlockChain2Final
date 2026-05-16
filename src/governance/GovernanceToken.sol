@@ -11,4 +11,13 @@ import {
 } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
 import {Nonces} from "@openzeppelin/contracts/utils/Nonces.sol";
 
-contract GovernanceToken is ERC20, ERC20Permit, ERC20Votes {}
+contract GovernanceToken is ERC20, ERC20Permit, ERC20Votes {
+    constructor(
+        string memory name,
+        string memory symbol,
+        address initialOwner,
+        uint256 initialSupply
+    ) ERC20(name, symbol) ERC20Permit(name) {
+        _mint(initialOwner, initialSupply);
+    }
+}
