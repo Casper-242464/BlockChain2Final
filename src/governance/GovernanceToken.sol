@@ -20,4 +20,12 @@ contract GovernanceToken is ERC20, ERC20Permit, ERC20Votes {
     ) ERC20(name, symbol) ERC20Permit(name) {
         _mint(initialOwner, initialSupply);
     }
+
+    function _update(
+        address from,
+        address to,
+        uint256 value
+    ) internal override(ERC20, ERC20Votes) {
+        super._update(from, to, value);
+    }
 }
