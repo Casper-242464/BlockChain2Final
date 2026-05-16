@@ -29,4 +29,15 @@ contract DSAGovernor is
     GovernorVotes,
     GovernorVotesQuorumFraction,
     GovernorTimelockControl
-{}
+{
+    constructor(
+        IVotes _token,
+        TimelockController _timelock
+    )
+        Governor("DSAGovernor")
+        GovernorSettings(1 days, 1 weeks, 0)
+        GovernorVotes(_token)
+        GovernorVotesQuorumFraction(4)
+        GovernorTimelockControl(_timelock)
+    {}
+}
