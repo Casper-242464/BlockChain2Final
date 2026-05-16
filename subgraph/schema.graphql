@@ -1,4 +1,4 @@
-type Proposal @entity(immutable: true) {
+type Proposal @entity(immutable: false) {
   id: ID!
   proposer: Account!
   targets: [Bytes!]!
@@ -11,7 +11,7 @@ type Proposal @entity(immutable: true) {
   createdTimestamp: BigInt!
 }
 
-type Vote @entity(immutable: true) {
+type Vote @entity(immutable: false) {
   id: ID!
   proposal: Proposal!
   voter: Account!
@@ -20,14 +20,14 @@ type Vote @entity(immutable: true) {
   reason: String
 }
 
-type Account @entity(immutable: true) {
+type Account @entity(immutable: false) {
   id: ID! # address
   delegatedVotes: BigInt!
   proposals: [Proposal!]! @derivedFrom(field: "proposer")
   votesCast: [Vote!]! @derivedFrom(field: "voter")
 }
 
-type GovernanceInfo @entity(immutable: true) {
+type GovernanceInfo @entity(immutable: false) {
   id: ID! # "global"
   totalProposals: BigInt!
   totalVotesCast: BigInt!
