@@ -49,4 +49,24 @@ contract DSAGovernor is
     {
         return super.votingDelay();
     }
+
+    function votingPeriod()
+        public
+        view
+        override(Governor, GovernorSettings)
+        returns (uint256)
+    {
+        return super.votingPeriod();
+    }
+
+    function quorum(
+        uint256 blockNumber
+    )
+        public
+        view
+        override(Governor, GovernorVotesQuorumFraction)
+        returns (uint256)
+    {
+        return super.quorum(blockNumber);
+    }
 }
