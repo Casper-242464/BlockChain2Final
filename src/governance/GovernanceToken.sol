@@ -34,4 +34,12 @@ contract GovernanceToken is ERC20, ERC20Permit, ERC20Votes {
     ) public view override(ERC20Permit, Nonces) returns (uint256) {
         return super.nonces(owner);
     }
+
+    function clock() public view override returns (uint48) {
+        return uint48(block.timestamp);
+    }
+
+    function CLOCK_MODE() public pure override returns (string memory) {
+        return "mode=timestamp";
+    }
 }
