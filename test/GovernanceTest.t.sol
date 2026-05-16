@@ -42,13 +42,16 @@ contract GovernanceTest is Test {
     function test_DelegationWorks() public {
         vm.prank(ADMIN);
         token.delegate(ADMIN);
+        vm.warp(block.timestamp + 1);
         assertEq(token.getVotes(ADMIN), INITIAL_SUPPLY);
     }
 
     function test_TransferUpdatesVotes() public {
         vm.startPrank(ADMIN);
         token.delegate(ADMIN);
+        vm.warp(block.timestamp + 1);
         token.transfer(USER, 100 ether);
+        vm.warp(block.timestamp + 1);
         vm.stopPrank();
 
         assertEq(token.getVotes(ADMIN), INITIAL_SUPPLY - 100 ether);
@@ -57,11 +60,12 @@ contract GovernanceTest is Test {
     function test_GovernorSettings() public {
         assertEq(governor.votingDelay(), 1 days);
         assertEq(governor.votingPeriod(), 1 weeks);
-        assertEq(governor.proposalThreshold(), 0);
+        assertEq(governor.proposalThreshold(), 10 ether);
     }
 
     function test_QuorumRequirement() public {
-        assertEq(governor.quorum(block.number - 1), 40 ether);
+        vm.warp(block.timestamp + 2);
+        assertEq(governor.quorum(block.timestamp - 1), 40 ether);
     }
 
     function test_TimelockDelayConstant() public {
@@ -77,6 +81,7 @@ contract GovernanceTest is Test {
     function test_CreateProposal() public {
         vm.prank(ADMIN);
         token.delegate(ADMIN);
+        vm.warp(block.timestamp + 1);
 
         address[] memory targets = new address[](1);
         uint256[] memory values = new uint256[](1);
@@ -85,6 +90,7 @@ contract GovernanceTest is Test {
         values[0] = 0;
         calldatas[0] = "";
 
+        vm.prank(ADMIN);
         uint256 propId = governor.propose(
             targets,
             values,
@@ -108,7 +114,9 @@ contract GovernanceTest is Test {
     function test_ProposalStateTransition() public {
         vm.prank(ADMIN);
         token.delegate(ADMIN);
+        vm.warp(block.timestamp + 1);
 
+        vm.prank(ADMIN);
         uint256 propId = governor.propose(
             new address[](1),
             new uint256[](1),
@@ -123,6 +131,8 @@ contract GovernanceTest is Test {
     function test_CastVote() public {
         vm.prank(ADMIN);
         token.delegate(ADMIN);
+        vm.warp(block.timestamp + 1);
+        vm.prank(ADMIN);
         uint256 propId = governor.propose(
             new address[](1),
             new uint256[](1),
@@ -139,6 +149,8 @@ contract GovernanceTest is Test {
     function test_Revert_VoteTwice() public {
         vm.prank(ADMIN);
         token.delegate(ADMIN);
+        vm.warp(block.timestamp + 1);
+        vm.prank(ADMIN);
         uint256 propId = governor.propose(
             new address[](1),
             new uint256[](1),
@@ -156,6 +168,8 @@ contract GovernanceTest is Test {
     function test_Revert_VoteAfterPeriod() public {
         vm.prank(ADMIN);
         token.delegate(ADMIN);
+        vm.warp(block.timestamp + 1);
+        vm.prank(ADMIN);
         uint256 propId = governor.propose(
             new address[](1),
             new uint256[](1),
@@ -171,6 +185,7 @@ contract GovernanceTest is Test {
     function test_FullLifecycle_Execution() public {
         vm.startPrank(ADMIN);
         token.delegate(ADMIN);
+        vm.warp(block.timestamp + 1);
 
         address[] memory targets = new address[](1);
         uint256[] memory values = new uint256[](1);

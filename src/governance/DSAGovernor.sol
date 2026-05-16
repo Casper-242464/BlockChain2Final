@@ -21,6 +21,7 @@ import {IVotes} from "@openzeppelin/contracts/governance/utils/IVotes.sol";
 import {
     TimelockController
 } from "@openzeppelin/contracts/governance/TimelockController.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract DSAGovernor is
     Governor,
@@ -93,7 +94,8 @@ contract DSAGovernor is
         override(Governor, GovernorSettings)
         returns (uint256)
     {
-        return super.proposalThreshold();
+        // 1% threshold
+        return (IERC20(address(token())).totalSupply() * 1) / 100;
     }
 
     function _queueOperations(
@@ -102,7 +104,7 @@ contract DSAGovernor is
         uint256[] memory values,
         bytes[] memory calldatas,
         bytes32 descriptionHash
-    ) internal override(Governor, GovernorTimelockControl) returns (uint256) {
+    ) internal override(Governor, GovernorTimelockControl) returns (uint48) {
         return
             super._queueOperations(
                 proposalId,
