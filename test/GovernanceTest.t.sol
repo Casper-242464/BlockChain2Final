@@ -53,4 +53,24 @@ contract GovernanceTest is Test {
 
         assertEq(token.getVotes(ADMIN), INITIAL_SUPPLY - 100 ether);
     }
+
+    function test_GovernorSettings() public {
+        assertEq(governor.votingDelay(), 1 days);
+        assertEq(governor.votingPeriod(), 1 weeks);
+        assertEq(governor.proposalThreshold(), 0);
+    }
+
+    function test_QuorumRequirement() public {
+        assertEq(governor.quorum(block.number - 1), 40 ether);
+    }
+
+    function test_TimelockDelayConstant() public {
+        assertEq(timelock.DEFAULT_MIN_DELAY(), 2 days);
+    }
+
+    function test_GovernorHasProposerRole() public {
+        assertTrue(
+            timelock.hasRole(timelock.PROPOSER_ROLE(), address(governor))
+        );
+    }
 }
