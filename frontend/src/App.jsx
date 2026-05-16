@@ -3,6 +3,8 @@ import { ConnectKitProvider, ConnectKitButton, getDefaultConfig } from "connectk
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Governance } from "./Governance";
 import { CreateProposal } from "./Proposals";
+import { ProposalList } from "./ProposalList";
+import { Toaster } from "react-hot-toast";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +28,7 @@ const config = createConfig({
 function App() {
   return (
     <WagmiProvider config={config}>
+      <Toaster position="top-right" />
       <QueryClientProvider client={queryClient}>
         <ConnectKitProvider theme="dark" options={{ disableEns: true, avoidExplicitEnabling: true }}>
           <div style={{ padding: "20px", fontFamily: "sans-serif", backgroundColor: "#121212", minHeight: "100vh", color: "white" }}>
@@ -37,6 +40,7 @@ function App() {
             <main style={{ maxWidth: "600px", margin: "40px auto" }}>
               <Governance />
               <CreateProposal />
+              <ProposalList />
             </main>
           </div>
         </ConnectKitProvider>

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useWriteContract } from "wagmi";
 import { GOVERNOR_ADDRESS, GOVERNOR_ABI } from "./contracts";
+import toast from "react-hot-toast";
 
 export function CreateProposal() {
     const [desc, setDesc] = useState("");
@@ -12,6 +13,13 @@ export function CreateProposal() {
             abi: GOVERNOR_ABI,
             functionName: "propose",
             args: [[GOVERNOR_ADDRESS], [0n], ["0x"], desc],
+        }, {
+            onSuccess: () => {
+                toast.success("Proposal created successfully");
+            },
+            onError: () => {
+                toast.error("Failed to create proposal");
+            }
         });
     };
 
