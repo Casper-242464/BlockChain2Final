@@ -73,4 +73,125 @@ contract GovernanceTest is Test {
             timelock.hasRole(timelock.PROPOSER_ROLE(), address(governor))
         );
     }
+
+    function test_CreateProposal() public {
+        vm.prank(ADMIN);
+        token.delegate(ADMIN);
+
+        address[] memory targets = new address[](1);
+        uint256[] memory values = new uint256[](1);
+        bytes[] memory calldatas = new bytes[](1);
+        targets[0] = address(this);
+        values[0] = 0;
+        calldatas[0] = "";
+
+        uint256 propId = governor.propose(
+            targets,
+            values,
+            calldatas,
+            "Test Proposal"
+        );
+        assertEq(uint256(governor.state(propId)), 0); // 0 = Pending
+    }
+
+    function test_Revert_ProposeWithoutVotes() public {
+        address[] memory targets = new address[](1);
+        uint256[] memory values = new uint256[](1);
+        bytes[] memory calldatas = new bytes[](1);
+        targets[0] = address(this);
+
+        vm.prank(USER);
+        vm.expectRevert();
+        governor.propose(targets, values, calldatas, "Fail Proposal");
+    }
+
+    function test_ProposalStateTransition() public {
+        vm.prank(ADMIN);
+        token.delegate(ADMIN);
+
+        uint256 propId = governor.propose(
+            new address[](1),
+            new uint256[](1),
+            new bytes[](1),
+            "State Test"
+        );
+
+        vm.warp(block.timestamp + 1 days + 1);
+        assertEq(uint256(governor.state(propId)), 1); // 1 = Active
+    }
+
+    function test_CastVote() public {
+        vm.prank(ADMIN);
+        token.delegate(ADMIN);
+        uint256 propId = governor.propose(
+            new address[](1),
+            new uint256[](1),
+            new bytes[](1),
+            "Vote Test"
+        );
+
+        vm.warp(block.timestamp + 1 days + 1);
+        governor.castVote(propId, 1); // 1 = For
+
+        assertEq(uint256(governor.state(propId)), 1);
+    }
+
+    function test_Revert_VoteTwice() public {
+        vm.prank(ADMIN);
+        token.delegate(ADMIN);
+        uint256 propId = governor.propose(
+            new address[](1),
+            new uint256[](1),
+            new bytes[](1),
+            "Double Vote"
+        );
+
+        vm.warp(block.timestamp + 1 days + 1);
+        governor.castVote(propId, 1);
+
+        vm.expectRevert();
+        governor.castVote(propId, 1);
+    }
+
+    function test_Revert_VoteAfterPeriod() public {
+        vm.prank(ADMIN);
+        token.delegate(ADMIN);
+        uint256 propId = governor.propose(
+            new address[](1),
+            new uint256[](1),
+            new bytes[](1),
+            "Late Vote"
+        );
+
+        vm.warp(block.timestamp + 1 weeks + 2 days);
+        vm.expectRevert();
+        governor.castVote(propId, 1);
+    }
+
+    function test_FullLifecycle_Execution() public {
+        vm.startPrank(ADMIN);
+        token.delegate(ADMIN);
+
+        address[] memory targets = new address[](1);
+        uint256[] memory values = new uint256[](1);
+        bytes[] memory calldatas = new bytes[](1);
+        targets[0] = ADMIN;
+        values[0] = 0;
+        calldatas[0] = "";
+        string memory desc = "Execute me";
+
+        uint256 propId = governor.propose(targets, values, calldatas, desc);
+
+        vm.warp(block.timestamp + 1 days + 1);
+        governor.castVote(propId, 1);
+
+        vm.warp(block.timestamp + 1 weeks + 1);
+        governor.queue(targets, values, calldatas, keccak256(bytes(desc)));
+
+        vm.warp(block.timestamp + 2 days + 1);
+        governor.execute(targets, values, calldatas, keccak256(bytes(desc)));
+
+        assertEq(uint256(governor.state(propId)), 7); // 7 = Executed
+        vm.stopPrank();
+    }
 }
