@@ -2,6 +2,7 @@ import { WagmiProvider, createConfig, http } from "wagmi";
 import { ConnectKitProvider, ConnectKitButton, getDefaultConfig } from "connectkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Governance } from "./Governance";
+import { CreateProposal } from "./Proposals";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ function App() {
 
             <main style={{ maxWidth: "600px", margin: "40px auto" }}>
               <Governance />
+              <CreateProposal />
             </main>
           </div>
         </ConnectKitProvider>
