@@ -28,4 +28,10 @@ contract GovernanceToken is ERC20, ERC20Permit, ERC20Votes {
     ) internal override(ERC20, ERC20Votes) {
         super._update(from, to, value);
     }
+
+    function nonces(
+        address owner
+    ) public view override(ERC20Permit, Nonces) returns (uint256) {
+        return super.nonces(owner);
+    }
 }
