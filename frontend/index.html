@@ -10,6 +10,24 @@
 
 <body>
   <div id="root"></div>
+  <script>
+    const originalFetch = window.fetch;
+    window.fetch = function () {
+      if (arguments[0] && typeof arguments[0] === 'string' && arguments[0].includes('merkle.io')) {
+        return Promise.reject(new Error('Blocked Merkle'));
+      }
+      return originalFetch.apply(this, arguments);
+    };
+
+    const originalOpen = XMLHttpRequest.prototype.open;
+    XMLHttpRequest.prototype.open = function (method, url) {
+      if (typeof url === 'string' && url.includes('merkle.io')) {
+        this.abort = function () { }; // Заглушка
+        return;
+      }
+      originalOpen.apply(this, arguments);
+    };
+  </script>
   <script type="module" src="/src/main.jsx"></script>
   <script>
     if (global === undefined) {

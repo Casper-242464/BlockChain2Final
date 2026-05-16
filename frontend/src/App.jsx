@@ -1,10 +1,11 @@
 import { WagmiProvider, createConfig, http } from "wagmi";
-import { ConnectKitProvider, ConnectKitButton, getDefaultConfig } from "connectkit";
+import { ConnectKitProvider, ConnectKitButton } from "connectkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Governance } from "./Governance";
 import { CreateProposal } from "./Proposals";
 import { ProposalList } from "./ProposalList";
 import { Toaster } from "react-hot-toast";
+import { injected } from "wagmi/connectors";
 
 const queryClient = new QueryClient();
 
@@ -20,6 +21,8 @@ const anvilChain = {
 
 const config = createConfig({
   chains: [anvilChain],
+  multiInjectedProviderDiscovery: false,
+  connectors: [injected()],
   transports: {
     [anvilChain.id]: http("http://127.0.0.1:8545"),
   },
@@ -30,7 +33,7 @@ function App() {
     <WagmiProvider config={config}>
       <Toaster position="top-right" />
       <QueryClientProvider client={queryClient}>
-        <ConnectKitProvider theme="dark" options={{ disableEns: true, avoidExplicitEnabling: true }}>
+        <ConnectKitProvider theme="dark" options={{ disableENS: true, avoidExplicitEnabling: true }}>
           <div style={{ padding: "20px", fontFamily: "sans-serif", backgroundColor: "#121212", minHeight: "100vh", color: "white" }}>
             <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <h1>DSA Governance</h1>

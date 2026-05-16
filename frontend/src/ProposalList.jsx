@@ -1,73 +1,57 @@
 import { useEffect, useState } from "react";
-import { useWriteContract, useReadContract } from "wagmi";
+import { usePublicClient, useWatchContractEvent } from "wagmi";
 import { GOVERNOR_ADDRESS, GOVERNOR_ABI } from "./contracts";
+import { parseAbiItem } from "viem";
+import { ProposalItem } from "./ProposalItem";
 
 const SUBGRAPH_URL = "https://api.studio.thegraph.com/query/960/voting-dapp/v0.0.1";
 
 export function ProposalList() {
     const [proposals, setProposals] = useState([]);
     const [loading, setLoading] = useState(true);
-    const { writeContract } = useWriteContract();
+    const publicClient = usePublicClient();
 
-    const QUERY = `
-    {
-        proposalCreateds(first: 5, orderBy: blockNumber, orderDirection: desc) {
-        id
-        proposalId
-        description
-        proposer
+    const fetchLogs = async () => {
+        if (!publicClient) return;
+        try {
+            const logs = await publicClient.getLogs({
+                address: GOVERNOR_ADDRESS,
+                event: parseAbiItem('event ProposalCreated(uint256 proposalId, address proposer, address[] targets, uint256[] values, string[] signatures, bytes[] calldatas, uint256 voteStart, uint256 voteEnd, string description)'),
+                fromBlock: 0n
+            });
+            setProposals(logs.map(l => ({ id: l.args.proposalId.toString(), desc: l.args.description })).reverse());
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setLoading(false);
         }
-    }
-    `;
+    };
+
+    useEffect(() => { fetchLogs(); }, [publicClient]);
+
+    useWatchContractEvent({
+        address: GOVERNOR_ADDRESS,
+        abi: GOVERNOR_ABI,
+        eventName: 'ProposalCreated',
+        onLogs: fetchLogs
+    });
 
     useEffect(() => {
         fetch(SUBGRAPH_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ query: QUERY })
-        })
-            .then(res => res.json())
-            .then(result => {
-                setProposals(result.data?.proposalCreateds || []);
-                setLoading(false);
-            })
-            .catch(err => console.error("Subgraph error:", err));
+            body: JSON.stringify({ query: `{ proposalCreateds(first: 5) { proposalId description } }` })
+        }).catch(err => console.error("Subgraph error:", err));
     }, []);
-
-    const handleVote = (proposalId, support) => {
-        writeContract({
-            address: GOVERNOR_ADDRESS,
-            abi: GOVERNOR_ABI,
-            functionName: "castVote",
-            args: [proposalId, support]
-        });
-    };
 
     return (
         <div style={{ marginTop: "20px", color: "white" }}>
-            <h3>Active Proposals (from Subgraph)</h3>
-            {loading && <p>Loading from The Graph...</p>}
+            <h3>Active Proposals</h3>
+            {loading && <p>Loading...</p>}
             {proposals.length === 0 && !loading && <p>No proposals found.</p>}
+            
             {proposals.map(p => (
-                <div key={p.id} style={{ background: "#222", padding: "15px", borderRadius: "8px", marginBottom: "10px", border: "1px solid #333" }}>
-                    <div style={{ fontSize: "0.8em", color: "#888" }}>ID: {p.proposalId}</div>
-                    <div style={{ fontWeight: "bold", margin: "5px 0" }}>{p.description || "No description"}</div>
-                    <div style={{ fontSize: "0.7em", color: "#555" }}>By: {p.proposer}</div>
-                    <div style={{ marginTop: "10px" }}>
-                        <button
-                            onClick={() => handleVote(p.proposalId, 1)}
-                            style={{ background: "#28a745", color: "white", border: "none", padding: "5px 10px", marginRight: "5px", borderRadius: "4px" }}
-                        >
-                            For
-                        </button>
-                        <button
-                            onClick={() => handleVote(p.proposalId, 0)}
-                            style={{ background: "#dc3545", color: "white", border: "none", padding: "5px 10px", borderRadius: "4px" }}
-                        >
-                            Against
-                        </button>
-                    </div>
-                </div>
+                <ProposalItem key={p.id} proposalId={p.id} description={p.desc} />
             ))}
         </div>
     );
