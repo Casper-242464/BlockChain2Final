@@ -1,0 +1,42 @@
+{
+  proposals(orderBy: createdTimestamp, orderDirection: desc) {
+    id
+    proposer { id }
+    description
+    status
+  }
+}
+
+{
+  proposal(id: "1") {
+    description
+    votes {
+      voter { id }
+      support
+      weight
+    }
+  }
+}
+
+{
+  accounts(orderBy: delegatedVotes, orderDirection: desc, first: 10) {
+    id
+    delegatedVotes
+  }
+}
+
+{
+  account(id: "0x...") {
+    votesCast {
+      proposal { id }
+      support
+    }
+  }
+}
+
+{
+  governanceInfos {
+    totalProposals
+    totalVotesCast
+  }
+}
