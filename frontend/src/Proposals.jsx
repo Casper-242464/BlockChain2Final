@@ -39,3 +39,4 @@ export function CreateProposal() {
         </div>
     );
 }
+
