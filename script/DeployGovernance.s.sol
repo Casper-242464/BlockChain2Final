@@ -28,6 +28,8 @@ contract DeployGovernance is Script {
         timelock.grantRole(timelock.PROPOSER_ROLE(), address(governor));
         timelock.grantRole(timelock.EXECUTOR_ROLE(), address(0));
 
+        timelock.revokeRole(timelock.DEFAULT_ADMIN_ROLE(), deployer);
+
         vm.stopBroadcast();
     }
 }
