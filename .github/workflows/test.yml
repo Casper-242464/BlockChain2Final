@@ -22,6 +22,11 @@ jobs:
           persist-credentials: false
           submodules: recursive
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
 
@@ -50,7 +55,7 @@ jobs:
 
       - name: Run Coverage and Filter
         run: |
-          sudo apt-get install lcov -y
+          sudo apt-get update && sudo apt-get install lcov bc -y
           
           # 1. Generate the raw lcov data
           forge coverage --report lcov --ir-minimum
