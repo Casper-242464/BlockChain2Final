@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { useWriteContract } from "wagmi";
+import { useWriteContract, useAccount } from "wagmi";
 import { GOVERNOR_ADDRESS, GOVERNOR_ABI } from "./contracts";
 import toast from "react-hot-toast";
 
 export function CreateProposal() {
     const [desc, setDesc] = useState("");
+    const { address } = useAccount();
     const { writeContract, isPending, data: hash } = useWriteContract();
 
     const handlePropose = () => {
@@ -12,7 +13,7 @@ export function CreateProposal() {
             address: GOVERNOR_ADDRESS,
             abi: GOVERNOR_ABI,
             functionName: "propose",
-            args: [[GOVERNOR_ADDRESS], [0n], ["0x"], desc],
+            args: [[address], [0n], ["0x"], desc],
         }, {
             onSuccess: () => {
                 toast.success("Proposal created successfully");

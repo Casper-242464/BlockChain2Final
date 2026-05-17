@@ -1,8 +1,9 @@
 import { useReadContract, useWriteContract, useAccount } from "wagmi";
+import { keccak256, toHex } from "viem";
 import { GOVERNOR_ADDRESS, GOVERNOR_ABI, PROPOSAL_STATES } from "./contracts";
 import toast from "react-hot-toast";
 
-export function ProposalItem({ proposalId, description }) {
+export function ProposalItem({ proposalId, description, targets, values, calldatas }) {
     const { address } = useAccount();
 
     const { data: state } = useReadContract({
@@ -38,6 +39,46 @@ export function ProposalItem({ proposalId, description }) {
             }
         });
     }
+
+    const handleQueue = () => {
+        if (!targets) {
+            toast.error("Proposal data not loaded fully");
+            return;
+        }
+        const descriptionHash = keccak256(toHex(description));
+        writeContract({
+            address: GOVERNOR_ADDRESS,
+            abi: GOVERNOR_ABI,
+            functionName: "queue",
+            args: [targets, values, calldatas, descriptionHash],
+        }, {
+            onSuccess: () => toast.success("Proposal Queued successfully!"),
+            onError: (err) => {
+                console.error(err);
+                toast.error("Failed to queue proposal");
+            }
+        });
+    };
+
+    const handleExecute = () => {
+        if (!targets) {
+            toast.error("Proposal data not loaded fully");
+            return;
+        }
+        const descriptionHash = keccak256(toHex(description));
+        writeContract({
+            address: GOVERNOR_ADDRESS,
+            abi: GOVERNOR_ABI,
+            functionName: "execute",
+            args: [targets, values, calldatas, descriptionHash],
+        }, {
+            onSuccess: () => toast.success("Proposal Executed successfully!"),
+            onError: (err) => {
+                console.error(err);
+                toast.error("Failed to execute proposal");
+            }
+        });
+    };
 
     const getStatusColor = () => {
         switch (state) {
@@ -90,7 +131,29 @@ export function ProposalItem({ proposalId, description }) {
 
             {state === 1 && hasVoted && (
                 <div style={{ marginTop: "15px", padding: "10px", background: "#222", borderRadius: "8px", color: "#888", textAlign: "center", fontSize: "0.9em", border: "1px solid #333" }}>
-                    ✅ You have already voted on this proposal.
+                    You have already voted on this proposal.
+                </div>
+            )}
+
+            {state === 4 && (
+                <div style={{ marginTop: "15px" }}>
+                    <button
+                        style={{ width: "100%", padding: "8px", borderRadius: "6px", background: "#6366f1", color: "white", border: "none", cursor: "pointer", fontWeight: "bold" }}
+                        onClick={handleQueue}
+                    >
+                        Queue Proposal
+                    </button>
+                </div>
+            )}
+
+            {state === 5 && (
+                <div style={{ marginTop: "15px" }}>
+                    <button
+                        style={{ width: "100%", padding: "8px", borderRadius: "6px", background: "#3b82f6", color: "white", border: "none", cursor: "pointer", fontWeight: "bold" }}
+                        onClick={handleExecute}
+                    >
+                        Execute Proposal
+                    </button>
                 </div>
             )}
         </div>

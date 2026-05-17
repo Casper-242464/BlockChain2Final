@@ -1,4 +1,4 @@
-import { WagmiProvider, createConfig, http } from "wagmi";
+import { WagmiProvider, createConfig, http, useAccount } from "wagmi";
 import { ConnectKitProvider, ConnectKitButton } from "connectkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Governance } from "./Governance";
@@ -28,6 +28,19 @@ const config = createConfig({
   },
 });
 
+function NetworkGuard({ children }) {
+  const { chainId, isConnected } = useAccount();
+  if (isConnected && chainId !== 31337) {
+    return (
+      <div style={{ padding: "20px", textAlign: "center", background: "#ff4d4d", color: "white", margin: "20px 0", borderRadius: "8px" }}>
+        <h2> Wrong Network</h2>
+        <p>Please switch your MetaMask to the local Foundry network (Chain ID: 31337).</p>
+      </div>
+    );
+  }
+  return children;
+}
+
 function App() {
   return (
     <WagmiProvider config={config}>
@@ -41,9 +54,11 @@ function App() {
             </header>
 
             <main style={{ maxWidth: "600px", margin: "40px auto" }}>
-              <Governance />
-              <CreateProposal />
-              <ProposalList />
+              <NetworkGuard>
+                <Governance />
+                <CreateProposal />
+                <ProposalList />
+              </NetworkGuard>
             </main>
           </div>
         </ConnectKitProvider>

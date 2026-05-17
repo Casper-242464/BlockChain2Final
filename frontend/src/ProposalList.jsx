@@ -19,7 +19,13 @@ export function ProposalList() {
                 event: parseAbiItem('event ProposalCreated(uint256 proposalId, address proposer, address[] targets, uint256[] values, string[] signatures, bytes[] calldatas, uint256 voteStart, uint256 voteEnd, string description)'),
                 fromBlock: 0n
             });
-            setProposals(logs.map(l => ({ id: l.args.proposalId.toString(), desc: l.args.description })).reverse());
+            setProposals(logs.map(l => ({ 
+                id: l.args.proposalId.toString(), 
+                desc: l.args.description,
+                targets: l.args.targets,
+                values: l.args.values,
+                calldatas: l.args.calldatas
+            })).reverse());
         } catch (e) {
             console.error(e);
         } finally {
@@ -51,7 +57,7 @@ export function ProposalList() {
             {proposals.length === 0 && !loading && <p>No proposals found.</p>}
             
             {proposals.map(p => (
-                <ProposalItem key={p.id} proposalId={p.id} description={p.desc} />
+                <ProposalItem key={p.id} proposalId={p.id} description={p.desc} targets={p.targets} values={p.values} calldatas={p.calldatas} />
             ))}
         </div>
     );
