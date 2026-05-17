@@ -267,14 +267,20 @@ contract AMMPair is ReentrancyGuard {
     }
 
     function sqrt(uint256 y) internal pure returns (uint256 z) {
-        if (y < 2) {
-            return y;
-        }
-        uint256 x = y;
-        z = (x + 1) / 2;
-        while (z < x) {
-            x = z;
-            z = (y / z + z) / 2;
+    if (y == 0) {
+        return 0;
+    }
+    assembly {
+        let x := add(div(y, 2), 1)
+        z := x
+        for {} 1 {} {
+            let xNew := div(add(div(y, x), x), 2)
+            if iszero(lt(xNew, z)) {
+                break
+            }
+            z := xNew
+            x := xNew
         }
     }
+}
 }
