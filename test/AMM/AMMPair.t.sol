@@ -161,11 +161,7 @@ contract AMMPairTest is Test {
         token1.mint(to, a1);
     }
 
-    function _getAmountOut(uint256 amountIn, uint256 reserveIn, uint256 reserveOut)
-        internal
-        pure
-        returns (uint256)
-    {
+    function _getAmountOut(uint256 amountIn, uint256 reserveIn, uint256 reserveOut) internal pure returns (uint256) {
         uint256 amountInWithFee = amountIn * 997;
         return (amountInWithFee * reserveOut) / (reserveIn * 1000 + amountInWithFee);
     }

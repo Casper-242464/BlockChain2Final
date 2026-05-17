@@ -9,25 +9,25 @@ import {MockERC20} from "test/mocks/MockERC20.sol";
 
 /// @notice Deploy yield vault + Chainlink oracle adapter (Person 2 — gTurboflex).
 contract DeployVaultOracle is Script {
-  function run() external {
-    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
-    address priceFeed = vm.envOr("CHAINLINK_PRICE_FEED", address(0));
-    uint256 staleness = vm.envOr("ORACLE_STALENESS_SECONDS", uint256(3600));
+    function run() external {
+        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+        address priceFeed = vm.envOr("CHAINLINK_PRICE_FEED", address(0));
+        uint256 staleness = vm.envOr("ORACLE_STALENESS_SECONDS", uint256(3600));
 
-    vm.startBroadcast(deployerPrivateKey);
+        vm.startBroadcast(deployerPrivateKey);
 
-    MockERC20 underlying = new MockERC20("DeFi Super-App USD", "DSAUSD", 18);
-    ERC4626Vault vault = new ERC4626Vault(IERC20(address(underlying)), "DSA Yield Vault", "yvDSA");
-    console.log("Underlying asset:", address(underlying));
-    console.log("ERC4626 vault:", address(vault));
+        MockERC20 underlying = new MockERC20("DeFi Super-App USD", "DSAUSD", 18);
+        ERC4626Vault vault = new ERC4626Vault(IERC20(address(underlying)), "DSA Yield Vault", "yvDSA");
+        console.log("Underlying asset:", address(underlying));
+        console.log("ERC4626 vault:", address(vault));
 
-    if (priceFeed != address(0)) {
-      ChainlinkOracle oracle = new ChainlinkOracle(priceFeed, staleness);
-      console.log("ChainlinkOracle:", address(oracle));
-    } else {
-      console.log("CHAINLINK_PRICE_FEED not set - deploy oracle separately on L2");
+        if (priceFeed != address(0)) {
+            ChainlinkOracle oracle = new ChainlinkOracle(priceFeed, staleness);
+            console.log("ChainlinkOracle:", address(oracle));
+        } else {
+            console.log("CHAINLINK_PRICE_FEED not set - deploy oracle separately on L2");
+        }
+
+        vm.stopBroadcast();
     }
-
-    vm.stopBroadcast();
-  }
 }
