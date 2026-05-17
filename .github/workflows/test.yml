@@ -52,7 +52,8 @@ jobs:
         with:
           target: '.'
           fail-on: medium
-          args: --config-file slither.config.json
+          slither-args: --filter-paths "lib|test|script"
+          slither-config: slither.config.json
 
       - name: Run Coverage and Filter
         run: |
