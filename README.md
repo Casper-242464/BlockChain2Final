@@ -13,7 +13,7 @@ The protocol natively synthesizes three core financial primitives into an optimi
 ## 2. Team Structure & Clear Areas of Ownership
 In alignment with Section 1.1 of the project requirements, each team member maintains strict individual ownership over core architecture, logic streams, and delivery pipelines:
 
-### 👤 Person 1: Protocol Architect & Lead Engineer
+### Person 1: Protocol Architect & Lead Engineer
 * **Core Focus:** Core Smart Contract Architecture, Advanced Solidity Patterns, Optimization, and CI/CD pipelines.
 * **Owned Component Deliverables:**
   * Core DeFi Logic: Constant-product AMM core engine (`AMMPair.sol`, `AMMFactory.sol`).
@@ -22,14 +22,14 @@ In alignment with Section 1.1 of the project requirements, each team member main
   * L2 DevOps: Network deployment setups for Layer 2 Testnets (Arbitrum/Base Sepolia) alongside automated GitHub Actions quality gates.
   * Automation Engine: Configured automated code formatting (`forge fmt`), linting (`solhint`), and strict security scanning via Crytic Slither.
 
-### 👤 Person 2: Financial Engineer & Cryptographer
+### Person 2: Financial Engineer & Cryptographer
 * **Core Focus:** Yield Aggregation, Mathematical Core Logic, and End-to-End Cryptographic Invariants.
 * **Owned Component Deliverables:**
   * Yield Mechanism: Native Tokenized Yield Vault implementation following the official EIP-4626 standard.
   * Algorithmic Logic: Multi-asset lending pool mechanism defining user health factors, collateralization ratios, and liquidation handlers.
   * Security Invariants: Creation of invariant test suites and fuzz testing vectors (`testFuzz_...`) ensuring the preservation of pool ratios and constant-product formulas under adversarial conditions.
 
-### 👤 Person 3: Full-Stack Engineer & Data Architect
+### Person 3: Full-Stack Engineer & Data Architect
 * **Core Focus:** Client-Side Applications, Blockchain Indexing, and Decentralized Governance Frameworks.
 * **Owned Component Deliverables:**
   * Data Indexing: Complete Subgraph design using AssemblyScript handlers to index factory events and serve historical market data.
@@ -95,3 +95,9 @@ forge script script/DeployGovernance.s.sol --rpc-url http://127.0.0.1:8545 --bro
 cd frontend
 npm run dev
 ```
+
+## 5. Project Documentation & Deliverables 
+Detailed technical specifications and gas optimization benchmarks are available in the docs directory: 
+* [Architecture & Design Document](docs/architecture-design.md) — A deep dive into the system layout, component interconnectivity, and security design.
+* [Gas Optimization Report](docs/gas-optimization-report.md) — Comparative analysis and benchmarks between Solidity and Yul mathematical primitives.
+* [security Audit Report](docs/security-audit-report.md) — The internal security review of the DeFi SuperApp
