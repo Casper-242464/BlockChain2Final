@@ -73,9 +73,7 @@ contract GovernanceTest is Test {
     }
 
     function test_GovernorHasProposerRole() public {
-        assertTrue(
-            timelock.hasRole(timelock.PROPOSER_ROLE(), address(governor))
-        );
+        assertTrue(timelock.hasRole(timelock.PROPOSER_ROLE(), address(governor)));
     }
 
     function test_CreateProposal() public {
@@ -91,12 +89,7 @@ contract GovernanceTest is Test {
         calldatas[0] = "";
 
         vm.prank(ADMIN);
-        uint256 propId = governor.propose(
-            targets,
-            values,
-            calldatas,
-            "Test Proposal"
-        );
+        uint256 propId = governor.propose(targets, values, calldatas, "Test Proposal");
         assertEq(uint256(governor.state(propId)), 0); // 0 = Pending
     }
 
@@ -117,12 +110,7 @@ contract GovernanceTest is Test {
         vm.warp(block.timestamp + 1);
 
         vm.prank(ADMIN);
-        uint256 propId = governor.propose(
-            new address[](1),
-            new uint256[](1),
-            new bytes[](1),
-            "State Test"
-        );
+        uint256 propId = governor.propose(new address[](1), new uint256[](1), new bytes[](1), "State Test");
 
         vm.warp(block.timestamp + 1 days + 1);
         assertEq(uint256(governor.state(propId)), 1); // 1 = Active
@@ -133,12 +121,7 @@ contract GovernanceTest is Test {
         token.delegate(ADMIN);
         vm.warp(block.timestamp + 1);
         vm.prank(ADMIN);
-        uint256 propId = governor.propose(
-            new address[](1),
-            new uint256[](1),
-            new bytes[](1),
-            "Vote Test"
-        );
+        uint256 propId = governor.propose(new address[](1), new uint256[](1), new bytes[](1), "Vote Test");
 
         vm.warp(block.timestamp + 1 days + 1);
         governor.castVote(propId, 1); // 1 = For
@@ -151,12 +134,7 @@ contract GovernanceTest is Test {
         token.delegate(ADMIN);
         vm.warp(block.timestamp + 1);
         vm.prank(ADMIN);
-        uint256 propId = governor.propose(
-            new address[](1),
-            new uint256[](1),
-            new bytes[](1),
-            "Double Vote"
-        );
+        uint256 propId = governor.propose(new address[](1), new uint256[](1), new bytes[](1), "Double Vote");
 
         vm.warp(block.timestamp + 1 days + 1);
         governor.castVote(propId, 1);
@@ -170,12 +148,7 @@ contract GovernanceTest is Test {
         token.delegate(ADMIN);
         vm.warp(block.timestamp + 1);
         vm.prank(ADMIN);
-        uint256 propId = governor.propose(
-            new address[](1),
-            new uint256[](1),
-            new bytes[](1),
-            "Late Vote"
-        );
+        uint256 propId = governor.propose(new address[](1), new uint256[](1), new bytes[](1), "Late Vote");
 
         vm.warp(block.timestamp + 1 weeks + 2 days);
         vm.expectRevert();
