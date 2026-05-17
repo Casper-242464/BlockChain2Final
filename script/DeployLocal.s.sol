@@ -6,7 +6,7 @@ import {GovernanceToken} from "../src/governance/GovernanceToken.sol";
 import {DSATimelock} from "../src/governance/DSATimelock.sol";
 import {DSAGovernor} from "../src/governance/DSAGovernor.sol";
 
-contract DeployGovernance is Script {
+contract DeployLocal is Script {
     function run() external {
         uint256 deployerPrivateKey =
             vm.envOr("PRIVATE_KEY", uint256(0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80));
