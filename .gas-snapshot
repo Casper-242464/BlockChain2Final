@@ -1,0 +1,2 @@
+GasBenchmarkTest:test_Gas_Solidity_Sqrt() (gas: 8833)
+GasBenchmarkTest:test_Gas_Yul_Sqrt() (gas: 2529)
