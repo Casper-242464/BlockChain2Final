@@ -40,7 +40,7 @@ jobs:
         run: forge build --sizes
 
       - name: Run Forge tests
-        run: forge test -vvv
+        run: forge test -vvvv
 
       - name: Run Slither
         uses: crytic/slither-action@v0.4.1
