@@ -4,7 +4,7 @@
 This repository contains the production-grade decentralized architecture for our Full-Stack DeFi Super-App, serving as the capstone project for Blockchain Technologies 2. 
 
 The protocol natively synthesizes three core financial primitives into an optimized, interconnected Layer 2 ecosystem:
-1. **Automated Market Maker (AMM):** A constant-product ($x \cdot y = k$) pool architecture using gas-optimized Yul blocks and programmable deployment logic via factory contracts.
+1. **Automated Market Maker (AMM):** A constant-product x * y = k pool architecture using gas-optimized Yul blocks and programmable deployment logic via factory contracts.
 2. **Lending Protocol:** An over-collateralized lending and borrowing engine with real-time risk metrics managed via automated health factors and Chainlink Price Feeds.
 3. **Tokenized Yield Vault:** A fully compliant ERC-4626 yield-bearing vault maximizing asset utilization across underlying lending protocol mechanisms.
 
