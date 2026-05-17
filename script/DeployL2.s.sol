@@ -4,7 +4,7 @@ pragma solidity 0.8.24;
 import {Script, console} from "forge-std/Script.sol";
 import {AMMFactory} from "src/AMMFactory.sol";
 
-contract DeployAMM is Script {
+contract DeployL2 is Script {
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
