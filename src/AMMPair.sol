@@ -54,7 +54,7 @@ contract AMMPair is ReentrancyGuard {
     /// @param to The recipient.
     /// @param amount0 The amount of token0 removed.
     /// @param amount1 The amount of token1 removed.
-    event Burn(address indexed sender, address indexed to, uint256 indexed amount0, uint256 amount1);
+    event Burn(address indexed sender, address indexed to, uint256 amount0, uint256 amount1);
     /// @notice Emitted when a swap occurs.
     /// @param sender The sender.
     /// @param amount0In The amount of token0 input.
@@ -217,7 +217,10 @@ contract AMMPair is ReentrancyGuard {
         uint256 amount1In = balance1 > _reserve1 - amount1Out ? balance1 - (_reserve1 - amount1Out) : 0;
         require(amount0In > 0 || amount1In > 0, "AMMPair: INSUFFICIENT_INPUT");
 
-        require(balance0 * balance1 >= _reserve0 * _reserve1, "AMMPair: K");
+        unchecked {
+            require(balance0 * balance1 >= _reserve0 * _reserve1, "AMMPair: K");
+        }
+        
         _update(balance0, balance1);
 
         emit Swap(msg.sender, amount0In, amount1In, amount0Out, amount1Out, to);
@@ -232,6 +235,14 @@ contract AMMPair is ReentrancyGuard {
         require(amountA > 0, "AMMPair: INSUFFICIENT_AMOUNT");
         require(reserveA > 0 && reserveB > 0, "AMMPair: INSUFFICIENT_LIQUIDITY");
         return (amountA * reserveB) / reserveA;
+    }
+
+    /// @notice Force balances to match reserves
+    function skim(address to) external nonReentrant {
+        address _token0 = token0;
+        address _token1 = token1;
+        require(IERC20(_token0).transfer(to, IERC20(_token0).balanceOf(address(this)) - reserve0), "AMMPair: TF");
+        require(IERC20(_token1).transfer(to, IERC20(_token1).balanceOf(address(this)) - reserve1), "AMMPair: TF");
     }
 
     function _transfer(address from, address to, uint256 amount) internal {
@@ -267,20 +278,17 @@ contract AMMPair is ReentrancyGuard {
     }
 
     function sqrt(uint256 y) internal pure returns (uint256 z) {
-    if (y == 0) {
-        return 0;
-    }
-    assembly {
-        let x := add(div(y, 2), 1)
-        z := x
-        for {} 1 {} {
-            let xNew := div(add(div(y, x), x), 2)
-            if iszero(lt(xNew, z)) {
-                break
+        assembly {
+            z := 1
+            if gt(y, 3) {
+                z := y
+                let x := add(div(y, 2), 1)
+                for { } lt(x, z) { } {
+                    z := x
+                    x := div(add(div(y, x), x), 2)
+                }
             }
-            z := xNew
-            x := xNew
+            if iszero(y) { z := 0 }
         }
     }
-}
 }
