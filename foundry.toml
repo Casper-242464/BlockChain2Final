@@ -4,9 +4,27 @@ out = "out"
 libs = ["lib"]
 optimizer = true
 optimizer_runs = 200
+solc = "0.8.24"
 remappings = [
-    "@openzeppelin/=lib/openzeppelin-contracts/"
+    "@openzeppelin/=lib/openzeppelin-contracts/",
+    "erc4626-tests/=lib/openzeppelin-contracts/lib/erc4626-tests/",
+    "forge-std/=lib/forge-std/src/",
+    "src/=src/",
+    "test/=test/"
 ]
+
+[rpc_endpoints]
+mainnet = "${MAINNET_RPC_URL}"
+sepolia = "${SEPOLIA_RPC_URL}"
+base_sepolia = "${BASE_SEPOLIA_RPC_URL}"
+
+[invariant]
+runs = 64
+depth = 16
+fail_on_revert = false
+
+[fuzz]
+runs = 256
 
 [profile.ci]
 fuzz = { runs = 1000 }
@@ -15,10 +33,7 @@ optimizer = true
 optimizer_runs = 200
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
 
-[rpc_endpoints]
-base_sepolia = "${BASE_SEPOLIA_RPC_URL}"
-
 [etherscan]
 sepolia = { key = "${ETHERSCAN_API_KEY}" }
 
-# forge script script/DeployL2.s.sol --rpc-url base_sepolia --broadcast --verify -vvvv
+# forge script script/DeployAMM.s.sol --rpc-url base_sepolia --broadcast --verify -vvvv

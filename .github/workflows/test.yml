@@ -52,6 +52,7 @@ jobs:
         with:
           target: '.'
           fail-on: medium
+          args: --config-file slither.config.json
 
       - name: Run Coverage and Filter
         run: |
@@ -68,7 +69,7 @@ jobs:
 
           # 4. Extract the percentage for the logs and threshold check
           # Using grep -oE to reliably find the number regardless of table width
-          COVERAGE=$(grep "Total:" coverage_report.md | grep -oE "[0-9]+\.[0-9]+" | head -1)
+          COVERAGE=$(grep "Total:" coverage_report.md | grep -oE "[0-9]+\.[0-9]+" | tail -1)
           echo "Coverage: $COVERAGE%"
 
           # 5. Professional Touch: Add the report to the GitHub UI Summary

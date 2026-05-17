@@ -2,9 +2,9 @@
 pragma solidity ^0.8.24;
 
 import {Test, console} from "forge-std/Test.sol";
-import {GovernanceToken} from "../../src/governance/GovernanceToken.sol";
-import {DSATimelock} from "../../src/governance/DSATimelock.sol";
-import {DSAGovernor} from "../../src/governance/DSAGovernor.sol";
+import {GovernanceToken} from "src/governance/GovernanceToken.sol";
+import {DSATimelock} from "src/governance/DSATimelock.sol";
+import {DSAGovernor} from "src/governance/DSAGovernor.sol";
 
 contract GovernanceTest is Test {
     GovernanceToken token;
