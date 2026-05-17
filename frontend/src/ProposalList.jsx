@@ -19,8 +19,8 @@ export function ProposalList() {
                 event: parseAbiItem('event ProposalCreated(uint256 proposalId, address proposer, address[] targets, uint256[] values, string[] signatures, bytes[] calldatas, uint256 voteStart, uint256 voteEnd, string description)'),
                 fromBlock: 0n
             });
-            setProposals(logs.map(l => ({ 
-                id: l.args.proposalId.toString(), 
+            setProposals(logs.map(l => ({
+                id: l.args.proposalId.toString(),
                 desc: l.args.description,
                 targets: l.args.targets,
                 values: l.args.values,
@@ -51,14 +51,16 @@ export function ProposalList() {
     }, []);
 
     return (
-        <div style={{ marginTop: "20px", color: "white" }}>
-            <h3>Active Proposals</h3>
+        <div style={{ marginTop: "10px", color: "white" }}>
+            <h3 style={{ marginTop: 0, marginBottom: "10px", paddingBottom: "10px" }}>Active Proposals</h3>
             {loading && <p>Loading...</p>}
             {proposals.length === 0 && !loading && <p>No proposals found.</p>}
-            
-            {proposals.map(p => (
-                <ProposalItem key={p.id} proposalId={p.id} description={p.desc} targets={p.targets} values={p.values} calldatas={p.calldatas} />
-            ))}
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "20px" }}>
+                {proposals.map(p => (
+                    <ProposalItem key={p.id} proposalId={p.id} description={p.desc} targets={p.targets} values={p.values} calldatas={p.calldatas} />
+                ))}
+            </div>
         </div>
     );
 }

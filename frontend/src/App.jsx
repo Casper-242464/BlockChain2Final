@@ -48,16 +48,24 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <ConnectKitProvider theme="dark" options={{ disableENS: true, avoidExplicitEnabling: true }}>
           <div style={{ padding: "20px", fontFamily: "sans-serif", backgroundColor: "#121212", minHeight: "100vh", color: "white" }}>
-            <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <h1>DSA Governance</h1>
-              <ConnectKitButton />
+            <header style={{ textAlign: "center", marginBottom: "40px", marginTop: "20px" }}>
+              <h1 style={{ marginTop: "110px" }}>DSA Governance</h1>
             </header>
 
-            <main style={{ maxWidth: "600px", margin: "40px auto" }}>
+            <main style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 20px" }}>
               <NetworkGuard>
-                <Governance />
-                <CreateProposal />
-                <ProposalList />
+                <div style={{ display: "flex", gap: "40px", alignItems: "flex-start" }}>
+                  <div style={{ flex: "0 0 350px", display: "flex", flexDirection: "column", gap: "15px" }}>
+                    <div style={{ alignSelf: "flex-start" }}>
+                      <ConnectKitButton />
+                    </div>
+                    <Governance />
+                    <CreateProposal />
+                  </div>
+                  <div style={{ flex: "1", display: "flex", flexDirection: "column", gap: "20px" }}>
+                    <ProposalList />
+                  </div>
+                </div>
               </NetworkGuard>
             </main>
           </div>

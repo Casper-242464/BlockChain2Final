@@ -34,7 +34,7 @@
   :root {
     --text: #9ca3af;
     --text-h: #f3f4f6;
-    --bg: #16171d;
+    --bg: #121212;
     --border: #2e303a;
     --code-bg: #1f2028;
     --accent: #c084fc;
@@ -52,14 +52,13 @@
 
 body {
   margin: 0;
+  background-color: #121212;
 }
 
 #root {
-  width: 1126px;
-  max-width: 100%;
+  width: 100%;
   margin: 0 auto;
   text-align: center;
-  border-inline: 1px solid var(--border);
   min-height: 100svh;
   display: flex;
   flex-direction: column;
