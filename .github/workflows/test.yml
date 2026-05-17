@@ -38,8 +38,8 @@ jobs:
 
       - name: Run Solhint
         run: |
-          npm install -g solhint
-          solhint "src/**/*.sol"
+          npm install
+          npx solhint "src/**/*.sol"
 
       - name: Run Forge build
         run: forge build --sizes
