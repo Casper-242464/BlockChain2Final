@@ -7,20 +7,11 @@ interface AggregatorV3Interface {
     function latestRoundData()
         external
         view
-        returns (
-            uint80 roundId,
-            int256 price,
-            uint256 startedAt,
-            uint256 updatedAt,
-            uint80 answeredInRound
-        );
+        returns (uint80 roundId, int256 price, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound);
 }
 
-
 contract ChainlinkOracle is Ownable {
-    
     AggregatorV3Interface public immutable priceFeed;
-    
 
     uint256 public immutable stalenessPeriod;
 
@@ -32,22 +23,12 @@ contract ChainlinkOracle is Ownable {
         stalenessPeriod = _stalenessPeriod;
     }
 
-
     function getLatestPrice() external view returns (uint256) {
-        (
-            uint80 roundId,
-            int256 price,
-            ,
-            uint256 updatedAt,
-            uint80 answeredInRound
-        ) = priceFeed.latestRoundData();
-
+        (uint80 roundId, int256 price,, uint256 updatedAt, uint80 answeredInRound) = priceFeed.latestRoundData();
 
         if (price <= 0) revert InvalidPrice();
 
-
         if (block.timestamp - updatedAt > stalenessPeriod) revert StalePrice();
-
 
         if (answeredInRound < roundId) revert StalePrice();
 

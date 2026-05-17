@@ -68,11 +68,7 @@ contract AMMSwapFuzzTest is Test {
         pair.addLiquidity(amount0, amount1, address(this));
     }
 
-    function _amountOut(uint256 amountIn, uint256 reserveIn, uint256 reserveOut)
-        internal
-        pure
-        returns (uint256)
-    {
+    function _amountOut(uint256 amountIn, uint256 reserveIn, uint256 reserveOut) internal pure returns (uint256) {
         uint256 inWithFee = amountIn * 997;
         return (inWithFee * reserveOut) / (reserveIn * 1000 + inWithFee);
     }
