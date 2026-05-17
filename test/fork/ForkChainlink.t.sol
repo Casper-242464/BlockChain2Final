@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 
 import {Test} from "forge-std/Test.sol";
-import {ChainlinkOracle} from "../../src/ChainlinkOracle.sol";
+import {ChainlinkOracle} from "src/ChainlinkOracle.sol";
 
 /// @notice Fork test against live Chainlink ETH/USD feed on Ethereum mainnet.
 contract ForkChainlinkTest is Test {

@@ -3,9 +3,9 @@ pragma solidity 0.8.24;
 
 import {Test} from "forge-std/Test.sol";
 import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
-import {AMMFactory} from "../../src/AMMFactory.sol";
-import {AMMPair} from "../../src/AMMPair.sol";
-import {MockAMToken} from "../mocks/MockAMToken.sol";
+import {AMMFactory} from "src/AMMFactory.sol";
+import {AMMPair} from "src/AMMPair.sol";
+import {MockAMToken} from "test/mocks/MockAMToken.sol";
 
 contract AMMFactoryTest is Test {
     AMMFactory internal factory;

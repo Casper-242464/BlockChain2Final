@@ -2,8 +2,8 @@
 pragma solidity ^0.8.20;
 
 import {Test} from "forge-std/Test.sol";
-import {ChainlinkOracle} from "../src/ChainlinkOracle.sol";
-import {MockV3Aggregator} from "./mocks/MockV3Aggregator.sol";
+import {ChainlinkOracle} from "src/ChainlinkOracle.sol";
+import {MockV3Aggregator} from "test/mocks/MockV3Aggregator.sol";
 
 /// @notice Unit tests for ChainlinkOracle (Person 2 — gTurboflex).
 contract ChainlinkOracleTest is Test {

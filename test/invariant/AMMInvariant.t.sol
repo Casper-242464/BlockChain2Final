@@ -3,8 +3,8 @@ pragma solidity 0.8.24;
 
 import {Test} from "forge-std/Test.sol";
 import {StdInvariant} from "forge-std/StdInvariant.sol";
-import {AMMPair} from "../../src/AMMPair.sol";
-import {MockAMToken} from "../mocks/MockAMToken.sol";
+import {AMMPair} from "src/AMMPair.sol";
+import {MockAMToken} from "test/mocks/MockAMToken.sol";
 
 contract AMMHandler is Test {
     AMMPair public pair;

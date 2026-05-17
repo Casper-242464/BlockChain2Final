@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
-import {IERC20} from "../../src/IERC20.sol";
+import {IERC20} from "src/IERC20.sol";
 
 /// @notice Minimal mintable token for AMM tests without modifying production AMM code.
 contract MockAMToken is IERC20 {

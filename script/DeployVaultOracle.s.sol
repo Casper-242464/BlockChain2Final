@@ -3,9 +3,9 @@ pragma solidity ^0.8.20;
 
 import {Script, console} from "forge-std/Script.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {ERC4626Vault} from "../src/ERC4626Vault.sol";
-import {ChainlinkOracle} from "../src/ChainlinkOracle.sol";
-import {MockERC20} from "../test/mocks/MockERC20.sol";
+import {ERC4626Vault} from "src/ERC4626Vault.sol";
+import {ChainlinkOracle} from "src/ChainlinkOracle.sol";
+import {MockERC20} from "test/mocks/MockERC20.sol";
 
 /// @notice Deploy yield vault + Chainlink oracle adapter (Person 2 — gTurboflex).
 contract DeployVaultOracle is Script {

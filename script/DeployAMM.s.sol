@@ -2,7 +2,7 @@
 pragma solidity 0.8.24;
 
 import {Script, console} from "forge-std/Script.sol";
-import {AMMFactory} from "../src/AMMFactory.sol";
+import {AMMFactory} from "src/AMMFactory.sol";
 
 contract DeployAMM is Script {
     function run() external {

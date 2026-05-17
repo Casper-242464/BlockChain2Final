@@ -2,7 +2,7 @@
 pragma solidity 0.8.24;
 
 import {Test} from "forge-std/Test.sol";
-import {GovernanceToken} from "../../src/governance/GovernanceToken.sol";
+import {GovernanceToken} from "src/governance/GovernanceToken.sol";
 
 /// @notice Fuzz voting power updates (assignment: governance voting power fuzz).
 contract GovernanceVotesFuzzTest is Test {
