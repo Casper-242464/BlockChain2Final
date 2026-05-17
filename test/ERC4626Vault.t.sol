@@ -3,8 +3,8 @@ pragma solidity ^0.8.20;
 
 import {Test} from "forge-std/Test.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {ERC4626Vault} from "../src/ERC4626Vault.sol";
-import {MockERC20} from "./mocks/MockERC20.sol";
+import {ERC4626Vault} from "src/ERC4626Vault.sol";
+import {MockERC20} from "test/mocks/MockERC20.sol";
 import {ERC4626Test} from "erc4626-tests/ERC4626.test.sol";
 
 /// @notice OpenZeppelin ERC-4626 rounding / invariant property suite for our vault.
