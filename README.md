@@ -58,8 +58,11 @@ graph TD
     AMMFactory -->|Deploys| AMM
 ```
 
-### 4.2 Local Environment Setup
+---
 
+## 4 Local Environment Setup
+
+### 4.1 IDE setup
 To build, format, lint, and run the protocol testing suite locally, execute the following commands in your terminal:
 
 ```bash
@@ -72,9 +75,23 @@ forge install
 
 # Run the local compilation check
 forge build
+```
 
-# Run the automated testing suite
-forge test
+### 4.2 Website setup
+For this part you will need to use several terminal windows.
+1. In the first terminal to deploy a local blockchain node
 
-# Run code coverage analysis locally
-forge coverage
+```bash 
+anvil
+```
+
+2. In the second terminal deploy our contracts to the local node. Then copy the contract addresses from the output and paste them into the frontend/src/contracts.js 
+```bash
+forge script script/DeployGovernance.s.sol --rpc-url http://127.0.0.1:8545 --broadcast
+```
+
+3. Finally, in the third terminal deploy the website itself
+```bash
+cd frontend
+npm run dev
+```
